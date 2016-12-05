@@ -1,2 +1,3 @@
-# rocket-boots
-A kit to allow rapid creation of web games in JavaScript and HTML5
+# RocketBoots Web Game Kit
+RocketBoots is kit to help create web games in JavaScript and HTML5.
+
