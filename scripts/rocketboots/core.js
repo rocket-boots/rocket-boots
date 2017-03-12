@@ -7,7 +7,7 @@ var RocketBoots = {
 	version: {
 		major: 0, minor: 9, patch: 1, 
 		codeName: "pocket2",
-		get full: function(){
+		get full(){
 			return this.major.toString() + "." + this.minor.toString() +  "." + this.patch.toString();
 		}
 	},
