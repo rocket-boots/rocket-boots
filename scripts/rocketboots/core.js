@@ -20,6 +20,7 @@ var RocketBoots = {
 	jQueryVersion: "3.1.1",
 	scriptsPath: "scripts/",
 	libsPath: "libs/",
+	defaultComponents: [], //["Game"],
 	
 //==== Classes
 
@@ -271,8 +272,7 @@ var RocketBoots = {
 			o.document = window.document;
 
 			// Load default components
-			// TODO: make this configurable
-			this.loadComponents(["Game"]);
+			o.loadComponents(o.defaultComponents);
 
 			// Load required scripts
 			if (isJQueryUndefined) {
