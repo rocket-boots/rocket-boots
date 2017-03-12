@@ -34,7 +34,7 @@ var RocketBoots = {
 //==== General Functions
 	log : console.log,
 	useGitHubScripts: function(){
-		this.scriptsPath = "https://rocket-boots.github.io/rocket-boots/scripts/rocketboots/";
+		this.scriptsPath = "https://rocket-boots.github.io/rocket-boots/scripts/";
 		return this;
 	},
 	loadScript : function(url, callback){
