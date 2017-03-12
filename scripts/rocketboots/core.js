@@ -4,7 +4,13 @@ var RocketBoots = {
 	readyFunctions : [],
 	components : {},
 	loadedScripts: [],
-	version: {full: "0.8.0", major: 0, minor: 8, patch: 0, codeName: "summoner"},
+	version: {
+		major: 0, minor: 9, patch: 1, 
+		codeName: "pocket2",
+		get full: function(){
+			return this.major.toString() + "." + this.minor.toString() +  "." + this.patch.toString();
+		}
+	},
 	_autoLoadRequirements: true,
 	_initTimer : null,
 	_MAX_ATTEMPTS : 300,
@@ -12,6 +18,8 @@ var RocketBoots = {
 	_: null, // Lodash
 	$: null, // jQuery
 	jQueryVersion: "3.1.1",
+	scriptsPath: "scripts/",
+	libsPath: "libs/",
 	
 //==== Classes
 
@@ -24,6 +32,10 @@ var RocketBoots = {
 	
 //==== General Functions
 	log : console.log,
+	useGitHubScripts: function(){
+		this.scriptsPath = "https://rocket-boots.github.io/rocket-boots/scripts/rocketboots/";
+		return this;
+	},
 	loadScript : function(url, callback){
 		//console.log("Loading script", url);
 		// http://stackoverflow.com/a/7719185/1766230
@@ -32,12 +44,11 @@ var RocketBoots = {
 		var r = false;
 		var t;
 		s.type = 'text/javascript';
-		s.src = "scripts/" + url + ".js";
+		s.src = o.scriptsPath + url + ".js";
 		s.className = "rocketboots-script";
 		s.onload = s.onreadystatechange = function() {
 			//console.log( this.readyState ); //uncomment this line to see which ready states are called.
-			if ( !r && (!this.readyState || this.readyState == 'complete') )
-			{
+			if ( !r && (!this.readyState || this.readyState == 'complete') ) {
 				r = true;
 				o.loadedScripts.push(url);
 				if (typeof callback == "function") callback();
@@ -265,12 +276,12 @@ var RocketBoots = {
 
 			// Load required scripts
 			if (isJQueryUndefined) {
-				o.loadScript("libs/jquery-" + o.jQueryVersion + ".min", function(){
+				o.loadScript(o.libsPath + "jquery-" + o.jQueryVersion + ".min", function(){
 					//o.init(1);
 				});
 			} 
 			if (isLodashUndefined) {
-				o.loadScript("libs/lodash.min", function(){ });
+				o.loadScript(o.libsPath + "lodash.min", function(){ });
 			}
 		}
 
@@ -293,7 +304,6 @@ var RocketBoots = {
 		tryAgain();
 		return false;
 	}
-
 };
 
 RocketBoots.init();
