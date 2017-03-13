@@ -7,7 +7,7 @@
 		credits:		"previously part of incrementer; by Luke Nickerson 2015-2016"
 	};
 
-	var Currency = component.Currency = function CurrencyClass (options){
+	var Currency = component.Currency = function Currency (options){
 		options 			= options || {};
 		this.name 			= (options.name || options.elementId || "Currency_" + Math.round(Math.random() * 9999999));
 		this.displayName 	= (options.displayName || this.name);
