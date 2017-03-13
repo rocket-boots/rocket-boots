@@ -22,6 +22,7 @@
 			size: 			{ x: 10, y: 10 },
 			pos: 			{ x: 0, y: 0 },
 			vel: 			{ x: 0, y: 0 },
+			rotation: 		0,
 			mass: 			null,
 			image: 			null,
 			color: 			"#ff7733",
