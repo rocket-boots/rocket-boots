@@ -4,7 +4,7 @@
 		classNames:		["Coords"],
 		requirements:	[],
 		description:	"2D Coordinates", // Originally created for stardust.js
-		credits:		"By Luke Nickerson, 2014"
+		credits:		"By Luke Nickerson, 2014, 2017"
 	};
 	
 	function Coords (x,y) {
@@ -16,6 +16,23 @@
 		this.y = (typeof y == 'number') ? y : 0;
 	}
 	component.Coords = Coords;
+
+	Coords.prototype = {
+		get r () {
+			return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+		}, 
+		set r (val) {
+			this.setByPolarCoords(val, this.theta);
+			return this.r;
+		},
+		get theta () {
+			return Math.atan(this.y / this.x);
+		},
+		set theta (val) {
+			this.setByPolarCoords(this.r, val);
+			return this.theta;
+		}
+	};
 
 	Coords.prototype.check = function(){
 		return this.checkCoords(this);
@@ -117,7 +134,20 @@
 	}
 	Coords.prototype.isEqualInteger = function(coord){
 		return (Math.round(this.x) == Math.round(coord.x) && Math.round(this.y) == Math.round(coord.y));
-	}
+	};
+
+	// Polar Coordinate functions
+	Coords.prototype.setByPolarCoords = function(r, theta) {
+		return this.set({
+			x: (r * Math.cos(theta)),
+			y: (r * Math.sin(theta))
+		}) ;
+	};
+	Coords.prototype.convertPolarToCartesianCoords = function(r, theta) {
+		var x = r * Math.cos(theta);
+		var y = r * Math.sin(theta);
+		return (new Coords(x, y));
+	};
 	
 	// Install into RocketBoots if it exists
 	if (typeof RocketBoots == "object") {
