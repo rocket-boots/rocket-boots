@@ -301,6 +301,8 @@
 		o.element.width			= size.x;
 		o.element.height		= size.y;
 		o.element.style.position = "absolute";
+		o.element.style.top 	= "0";
+		o.element.style.left 	= "0";
 
 		if (!o.smoothImage) {
 			o.element.style.imageRendering = "pixelated";
