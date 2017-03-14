@@ -159,6 +159,7 @@
 		this.subtract(aroundOriginCoords);
 		this.setByPolarCoords(this.r, (this.theta + theta));
 		this.add(aroundOriginCoords);
+		return this;
 	};
 	
 	// Install into RocketBoots if it exists
