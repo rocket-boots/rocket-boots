@@ -98,7 +98,7 @@
 		o.loopOverLayers(function(layer){
 			layer.resize(size);
 		});
-		o.draw();
+		return o.draw();
 	};
 
 	Stage.prototype.zoomIn = function () {
@@ -143,7 +143,7 @@
 		});
 	};
 	Stage.prototype.connectToEntity = function(world){
-		console.log(this, world);
+		console.log("Connecting stage", this, "to world", world);
 		this.loopOverLayers(function(layer){
 			//world.addEntityGroup(layer.name);
 			var ents = world.getEntitiesByGroup(layer.name);
@@ -371,6 +371,7 @@
 
 		// Draw a grid
 		o.drawGrid(20);
+		return i;
 	};
 
 	Stage.prototype.Layer.prototype.drawEntity = function(ent) {
