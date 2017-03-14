@@ -279,6 +279,7 @@
 		// Set these to non-zero to draw grid lines
 		this.stageGridScale = 0; 
 		this.worldGridScale = 0;
+		this.world = null;
 		this.getEntitiesArray;
 		// TODO: Make sure that this layer has position: absolute/relative
 		this.resize();
@@ -510,39 +511,52 @@
 			ctx.lineWidth = 1;
 			ctx.stroke();
 		}
-		
 		if (lay.worldGridScale > 0) {
-			//==== World Grid
-			var max = (lay.worldGridScale * 100);
-			var min = 0; //(-1 * max);
-			if (typeof this.stage.connectedEntity.size === 'object') {
-				max = Math.max(this.stage.connectedEntity.size.x, this.stage.connectedEntity.size.y);
-			}
-			
-			// *** TODO: Fix so it doesn't draw on half pixels 
+			this.drawWorldGrid();
+		}
+	};
+
+	Stage.prototype.Layer.prototype.drawWorldGrid = function(){
+		var world = this.stage.connectedEntity;
+		var ctx = this.ctx;
+		var min, max, x, y, drawLine;
+
+		if (typeof this.stage.connectedEntity.size === 'object') {				
+			// *** TODO: FIXME: Fix so it doesn't draw on half pixels 
 			// http://stackoverflow.com/questions/13879322/drawing-a-1px-thick-line-in-canvas-creates-a-2px-thick-line
 
-			function drawLine (coordStart, coordEnd) {
+			drawLine = function (coordStart, coordEnd) {
 				var lineStart = lay.stage.getStageXY(coordStart);
 				var lineEnd = lay.stage.getStageXY(coordEnd);
 				ctx.moveTo(lineStart.x, lineStart.y);
 				ctx.lineTo(lineEnd.x, lineEnd.y);				
 			}
 
-			ctx.strokeStyle = 'rgba(0,100,255,0.5)';
+			// Draw grid
+			ctx.strokeStyle = 'rgba(0,100,255,0.4)';
 			ctx.beginPath();
-			for (i = min; i <= max; i+=lay.worldGridScale) {
-				drawLine({x: i, y: min}, {x: i, y: max});
+			for (x = world.min.x; x <= world.max.x; x += lay.worldGridScale) {
+				drawLine({x: x, y: world.min.y}, {x: x, y: world.max.y});
 			}
-			for (i = min; i <= max; i+=lay.worldGridScale) {
-				drawLine({x: min, y: i}, {x: max, y: i});
+			for (y = world.min.y; y <= world.max.y; y += lay.worldGridScale) {
+				drawLine({x: world.min.x, y: y}, {x: world.max.x, y: y});
 			}
 			ctx.lineWidth = 1;
 			ctx.stroke();
+
+			// Draw x=0 and y=0 lines
+			ctx.strokeStyle = 'rgba(0,100,255,0.6)';
+			ctx.beginPath();
+			drawLine({x: 0, y: world.min.y}, {x: 0, y: world.max.y});
+			drawLine({x: world.min.x, y: 0}, {x: world.max.x, y: 0});
+			ctx.lineWidth = 1;
+			ctx.stroke();
+
+		} else {
+			console.warn("Cannot draw world grid. Please connect an entity to the stage, or turn off grid drawing by setting the layer's worldGridScale to 0.");
+			return false;
 		}
-
 	};
-
 
 
 
