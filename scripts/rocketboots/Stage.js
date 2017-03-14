@@ -517,9 +517,10 @@
 	};
 
 	Stage.prototype.Layer.prototype.drawWorldGrid = function(){
-		var world = this.stage.connectedEntity;
-		var ctx = this.ctx;
-		var min, max, x, y, drawLine;
+		var lay = this,
+			world = this.stage.connectedEntity,
+			ctx = this.ctx,
+			min, max, x, y, drawLine;
 
 		if (typeof this.stage.connectedEntity.size === 'object') {				
 			// *** TODO: FIXME: Fix so it doesn't draw on half pixels 
