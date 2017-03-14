@@ -13,6 +13,8 @@
 	}
 	component.Stage = Stage;
 
+/// Initialize Stage
+
 	Stage.prototype.init = function(options){
 		if (typeof options === 'string') {
 			options = {elementId: options};
@@ -42,7 +44,8 @@
 		this.connectedEntity = null;
 	}
 
-	//==== Stage Functions
+/// Layer Controls
+
 	Stage.prototype.addLayer = function(layerName){
 		if (typeof layerName == 'undefined') { layerName = "canvas"; }
 		this.layerOngoingCounter++;
@@ -80,6 +83,8 @@
 		return names;
 	};
 
+/// Draw and Resize
+
 	Stage.prototype.draw = function(forceAll){
 		if (typeof forceAll != "boolean") forceAll = false;
 		this.camera.focus();
@@ -111,6 +116,8 @@
 		return o.draw();
 	};
 
+/// Zoom
+
 	Stage.prototype.zoomIn = function () {
 		this.scaleIndex = Math.min((this.scales.length - 1), (this.scaleIndex + 1));
 		return this.setScaleToZoom();
@@ -125,17 +132,26 @@
 		return this.scale;
 	};
 
-	Stage.prototype.getStageXY = function(pos){
-		return {x:	this.getStageX(pos.x), y: this.getStageY(pos.y)};
+/// Coordinates
+
+	Stage.prototype.getStageCoords = function(pos){
+		var stageCoords = new RocketBoots.Coords(this.getStageX(pos.x), this.getStageY(pos.y));
+		if (this.camera.rotation === 0) {
+			return stageCoords;
+		} else {
+			return stageCoords.rotate(this.camera.rotation, this.camera.pos);
+		}
 	};
+
+	// NOTE: `getStageX` and `getStageY` do NOT use the camera's rotation
 	Stage.prototype.getStageX = function (x) {
-		//if (typeof this.camera === 'undefined') return null;
 		return parseInt(((x - this.camera.pos.x) + this._halfSize.x) * this.scale.x);
 	};
 	Stage.prototype.getStageY = function (y) {
-		//if (typeof this.camera === 'undefined') return null;
 		return parseInt((this._halfSize.y - y + this.camera.pos.y) * this.scale.y);
 	};
+
+	// FIXME: `getPosition` does not use scale or camera's rotation!
 	Stage.prototype.getPosition = function(stageX, stageY){
 		return {
 			x:	stageX + this.camera.pos.x - this._halfSize.x
@@ -144,6 +160,8 @@
 			//,y: (this.camera.pos.y - stageY)
 		};		
 	};
+
+/// Stage Clicking and Connections
 
 	Stage.prototype.addClickEvent = function(fn){
 		var s = this;
@@ -171,15 +189,17 @@
 	};
 
 	
-	//==== CAMERA
+//==== CAMERA
+
 	Stage.prototype.Camera = function(options){
 		_.extend(this, {
 			pos: {x: 0, y: 0},
+			rotation: 0,
 			followCoords: null,
 			lockedX: null,
 			lockedY: null,
 			stage: null,
-			boundaries: null 
+			boundaries: null
 		}, options);
 		this.pos = new RocketBoots.Coords(this.pos);
 	};
@@ -358,6 +378,7 @@
 			i, j;
 		
 		ctx.clearRect(0, 0, o.size.x, o.size.y);
+		// ctx.translate(0.5, 0.5); // TODO: Does this fix the half pixel issue?
 		ctx.save();
 		ctx.fillStyle = '#ffff66';
 		ctx.strokeStyle = '#000000';
@@ -383,7 +404,7 @@
 		}
 
 		// Draw a grid
-		o.drawGrid(20);
+		o.drawGrids();
 		ctx.restore();
 		return i;
 	};
@@ -395,48 +416,62 @@
 		var ctx = this.ctx;
 		var layerSize = this.size;
 		// Find the middle of the entity
-		var stageXY = this.stage.getStageXY(ent.pos); 
+		var stageCoords = this.stage.getStageCoords(ent.pos); 
 		// Find the top/left stage coordinates of the entity
-		var entStageXYOffset = {
-			x : stageXY.x - ent._halfSize.x + ent.stageOffset.x,
-			y : stageXY.y - ent._halfSize.y + ent.stageOffset.y
-		};
+		var entStageCoordsOffset = new RocketBoots.Coords(
+			stageCoords.x - ent._halfSize.x + ent.stageOffset.x,
+			stageCoords.y - ent._halfSize.y + ent.stageOffset.y
+		);
+		// How big is the stage?
 		var stageSize = {
 			x: ent.size.x * this.stage.scale.x,
 			y: ent.size.y * this.stage.scale.y
 		};
 
 		// Note: The off-stage calculations don't take rotation into consideration
-		if (entStageXYOffset.x > layerSize.x || (entStageXYOffset.x + stageSize.x) < 0) {
+		if (entStageCoordsOffset.x > layerSize.x || (entStageCoordsOffset.x + stageSize.x) < 0) {
 			return false; // off stage (layer), right or left
-		} else if (entStageXYOffset.y > layerSize.y || (entStageXYOffset.y + stageSize.y) < 0) {
+		} else if (entStageCoordsOffset.y > layerSize.y || (entStageCoordsOffset.y + stageSize.y) < 0) {
 			return false; // off stage (layer), top or bottom
 		}
 
-		ctx.layer = this; // TODO: better way to do this?
-		//console.log("PosX", ent.pos.x, "PosY", ent.pos.y, "stageXY", stageXY, "entStageXYOffset", entStageXYOffset);
+		// ctx.layer = this; // TODO: Is this needed?
 		
 		ctx.save(); // TODO: needed here or does the save/restore in `draw` suffice?
 
-		ctx.translate(stageXY.x, stageXY.y);
-		ctx.rotate(ent.rotation);
-		ctx.translate(-stageXY.x, -stageXY.y);
+		if (ent.rotation !== 0) {
+			// Method 1
+			ctx.translate(stageCoords.x, stageCoords.y);
+			ctx.rotate(ent.rotation);
+			ctx.translate(-stageCoords.x, -stageCoords.y);
+
+			// Method 2
+			// TODO: This might be faster, but doesn't work the same as above
+			// see http://stackoverflow.com/a/42780731/1766230
+			// var xdx = Math.cos(ent.rotation);
+			// var xdy = Math.sin(ent.rotation);
+			// ctx.setTransform(
+			// 	xdx, xdy,  				// direction of the x-axis
+			// 	-xdy, xdx, 				// direction of the y axis (90 clockwise from x axis)
+			// 	stageCoords.x, stageCoords.y 	// set the origin point around which to rotate
+			// );
+		}
 		
 		if (typeof ent.draw.before === 'function') {
-			ent.draw.before(ctx, stageXY, entStageXYOffset);
+			ent.draw.before(ctx, stageCoords, entStageCoordsOffset, this);
 		}
 
 		if (typeof ent.draw.custom === 'function') {
-			ent.draw.custom(ctx, stageXY, entStageXYOffset);	
+			ent.draw.custom(ctx, stageCoords, entStageCoordsOffset, this);	
 		} else {
 			if (ent.image) {
 				ctx.drawImage( ent.image,
-					entStageXYOffset.x, entStageXYOffset.y,
+					entStageCoordsOffset.x, entStageCoordsOffset.y,
 					stageSize.x, stageSize.y);
 			} else {
 				//console.log("Drawing rectangle")
 				ctx.fillStyle = ent.color; // '#ffff66';
-				ctx.fillRect(entStageXYOffset.x, entStageXYOffset.y, 
+				ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
 					stageSize.x,stageSize.y);	
 			}
 		}
@@ -446,18 +481,18 @@
 				ent.draw.highlight();
 			} else {
 				//ctx.strokeStyle = '#ff0000';
-				ctx.strokeRect(entStageXYOffset.x, entStageXYOffset.y, ent.size.x, ent.size.y);
+				ctx.strokeRect(entStageCoordsOffset.x, entStageCoordsOffset.y, ent.size.x, ent.size.y);
 			}
 		}
 
 		if (typeof ent.draw.after === 'function') {
-			ent.draw.after(ctx, stageXY, entStageXYOffset);
+			ent.draw.after(ctx, stageCoords, entStageCoordsOffset);
 		}
 	
 		/*
 		ctx.strokeStyle = ent.color;
 		ctx.beginPath();
-		ctx.arc(stageXY.x, stageXY.y, ent.radius, 0, PI2);
+		ctx.arc(stageCoords.x, stageCoords.y, ent.radius, 0, PI2);
 		ctx.stroke();	
 		*/
 		
@@ -481,38 +516,38 @@
 		return this;
 	}
 
-	Stage.prototype.Layer.prototype.drawGrid = function() {
-		var lay = this, 
-			ctx = this.ctx,
-			getStageX = this.stage.getStageX,
-			getStageY = this.stage.getStageY,
-			lineStart, lineEnd;
-			
-		if (lay.stageGridScale > 0) {
-			//==== Stage Grid
-			ctx.strokeStyle = 'rgba(255,255,0,0.25)'; //#ffff00';
-			ctx.beginPath();
-			for (i = 0; i < lay.size.x; i+=lay.stageGridScale) {
-				ctx.moveTo(i, 0);
-				ctx.lineTo(i, lay.size.y);
-				//ctx.strokeRect(i, 0, i, lay.size.y);
-			}
-			for (i = 0; i < lay.size.y; i+=lay.stageGridScale) {
-				ctx.moveTo(0, i);
-				ctx.lineTo(lay.size.x, i);
-				//ctx.strokeRect(0, i, lay.size.x, i);
-			}
-			ctx.lineWidth = 1;
-			ctx.stroke();
+	Stage.prototype.Layer.prototype.drawGrids = function() {
+		if (this.stageGridScale > 0) {
+			this.drawStageGrid(this.stageGridScale);
 		}
-		if (lay.worldGridScale > 0) {
-			this.drawWorldGrid();
+		if (this.worldGridScale > 0) {
+			this.drawWorldGrid(this.worldGridScale);
 		}
 	};
 
-	Stage.prototype.Layer.prototype.drawWorldGrid = function(){
+	Stage.prototype.Layer.prototype.drawStageGrid = function(scale){
 		var lay = this,
-			world = this.stage.connectedEntity,
+			ctx = this.ctx;
+		//==== Stage Grid
+		ctx.strokeStyle = 'rgba(255,255,0,0.25)'; //#ffff00';
+		ctx.beginPath();
+		for (i = 0; i < lay.size.x; i+=lay.stageGridScale) {
+			ctx.moveTo(i, 0);
+			ctx.lineTo(i, lay.size.y);
+			//ctx.strokeRect(i, 0, i, lay.size.y);
+		}
+		for (i = 0; i < lay.size.y; i+=lay.stageGridScale) {
+			ctx.moveTo(0, i);
+			ctx.lineTo(lay.size.x, i);
+			//ctx.strokeRect(0, i, lay.size.x, i);
+		}
+		ctx.lineWidth = 1;
+		ctx.stroke();
+	};
+
+	Stage.prototype.Layer.prototype.drawWorldGrid = function(scale){
+		var stage = this.stage,
+			world = stage.connectedEntity,
 			ctx = this.ctx,
 			min, max, x, y, drawLine;
 
@@ -521,8 +556,8 @@
 			// http://stackoverflow.com/questions/13879322/drawing-a-1px-thick-line-in-canvas-creates-a-2px-thick-line
 
 			drawLine = function (coordStart, coordEnd) {
-				var lineStart = lay.stage.getStageXY(coordStart);
-				var lineEnd = lay.stage.getStageXY(coordEnd);
+				var lineStart = stage.getStageCoords(coordStart);
+				var lineEnd = stage.getStageCoords(coordEnd);
 				ctx.moveTo(lineStart.x, lineStart.y);
 				ctx.lineTo(lineEnd.x, lineEnd.y);				
 			}
@@ -530,10 +565,10 @@
 			// Draw grid
 			ctx.strokeStyle = 'rgba(0,100,255,0.4)';
 			ctx.beginPath();
-			for (x = world.min.x; x <= world.max.x; x += lay.worldGridScale) {
+			for (x = world.min.x; x <= world.max.x; x += scale) {
 				drawLine({x: x, y: world.min.y}, {x: x, y: world.max.y});
 			}
-			for (y = world.min.y; y <= world.max.y; y += lay.worldGridScale) {
+			for (y = world.min.y; y <= world.max.y; y += scale) {
 				drawLine({x: world.min.x, y: y}, {x: world.max.x, y: y});
 			}
 			ctx.lineWidth = 1;
