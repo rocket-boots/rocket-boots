@@ -300,6 +300,7 @@
 		o.element.style.height	= (size.y * o.stage.scale.y * o.stage.pixelScale) + "px";
 		o.element.width			= size.x;
 		o.element.height		= size.y;
+		o.element.style.position = "absolute";
 
 		if (!o.smoothImage) {
 			o.element.style.imageRendering = "pixelated";
