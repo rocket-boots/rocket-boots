@@ -52,10 +52,20 @@
 		this.layers.push(layer);
 		this.layerCount++;
 		return layer;
-	}
+	};
+	Stage.prototype.addLayers = function(layerNames){
+		var s = this;
+		var layers = [];
+		layerNames.forEach(function(layerName){
+			layers.push( s.addLayer(layerName) );
+		});
+		return layers;
+	};
 	Stage.prototype.removeLayer = function(){
+		// FIXME: This doesn't work
 		this.layerCount--;
-	}
+	};
+
 	Stage.prototype.loopOverLayers = function(fn){
 		for (var i = 0; i < this.layerCount; i++){
 			fn(this.layers[i], i);
