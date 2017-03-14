@@ -417,11 +417,10 @@
 		//console.log("PosX", ent.pos.x, "PosY", ent.pos.y, "stageXY", stageXY, "entStageXYOffset", entStageXYOffset);
 		
 		ctx.save(); // TODO: needed here or does the save/restore in `draw` suffice?
-		ctx.beginPath();
-		console.log(stageXY.x, stageXY.y);
 
-		//ctx.translate(stageXY.x, stageXY.y); // FIXME: This doesn't work
-		//ctx.rotate(ent.rotation);
+		ctx.translate(stageXY.x, stageXY.y);
+		ctx.rotate(ent.rotation);
+		ctx.translate(-stageXY.x, -stageXY.y);
 		
 		if (typeof ent.draw.before === 'function') {
 			ent.draw.before(ctx, stageXY, entStageXYOffset);
