@@ -357,9 +357,8 @@
 			ent = {},
 			i, j;
 		
-		ctx.save();
 		ctx.clearRect(0, 0, o.size.x, o.size.y);
-		ctx.restore();
+		ctx.save();
 		ctx.fillStyle = '#ffff66';
 		ctx.strokeStyle = '#000000';
 		
@@ -385,6 +384,7 @@
 
 		// Draw a grid
 		o.drawGrid(20);
+		ctx.restore();
 		return i;
 	};
 
@@ -406,6 +406,7 @@
 			y: ent.size.y * this.stage.scale.y
 		};
 
+		// Note: The off-stage calculations don't take rotation into consideration
 		if (entStageXYOffset.x > layerSize.x || (entStageXYOffset.x + stageSize.x) < 0) {
 			return false; // off stage (layer), right or left
 		} else if (entStageXYOffset.y > layerSize.y || (entStageXYOffset.y + stageSize.y) < 0) {
@@ -415,9 +416,12 @@
 		ctx.layer = this; // TODO: better way to do this?
 		//console.log("PosX", ent.pos.x, "PosY", ent.pos.y, "stageXY", stageXY, "entStageXYOffset", entStageXYOffset);
 		
-		//ctx.save(); // TODO: needed?
-		//ctx.translate(this.element.width/2, this.element.height/2);
-		//ctx.rotate(90 *Math.PI/180);
+		ctx.save(); // TODO: needed here or does the save/restore in `draw` suffice?
+		ctx.beginPath();
+		console.log(stageXY.x, stageXY.y);
+
+		//ctx.translate(stageXY.x, stageXY.y); // FIXME: This doesn't work
+		//ctx.rotate(ent.rotation);
 		
 		if (typeof ent.draw.before === 'function') {
 			ent.draw.before(ctx, stageXY, entStageXYOffset);
@@ -452,22 +456,13 @@
 		}
 	
 		/*
-		if (typeof ent.character == 'object') {
-			ctx.strokeStyle = ent.color;
-			ctx.beginPath();
-			ctx.arc(stageXY.x, stageXY.y + 10, 2, 0, PI2);
-			ctx.stroke();	
-		}
-		*/
-		
-		//ctx.restore(); // TODO: needed?
-		
-		/*
 		ctx.strokeStyle = ent.color;
 		ctx.beginPath();
 		ctx.arc(stageXY.x, stageXY.y, ent.radius, 0, PI2);
 		ctx.stroke();	
 		*/
+		
+		ctx.restore(); // CAREFUL: Only needed if `save` is used above
 	};
 
 	Stage.prototype.Layer.prototype.drawStageLine = function (x1, y1, x2, y2, lineWidth, color) {
