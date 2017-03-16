@@ -1,6 +1,31 @@
-# RocketBoots Components
+# List of RocketBoots Components
 
-* [ImageBank](ImageBank.md) (alpha)
+* Coords
+* Currency
+* Dice
+* Entity
+* Game
+* [ImageBank](ImageBank.md)
+* Incrementer
+* Keyboard
+* Loop
+* Notifier
+* Physics
+* SoundBank
+* Stage
+* StateMachine
+* Storage
+* Tabs
+* World
 
-alpha = can be used now, but likely lacking some key features
-beta = can be used now; probably has all features, but could have bugs or might require optimization
+Unless otherwise specified, these should be considered *alpha*, i.e., they can be used now, but likely lacking some key features, might have bugs, and might need optimization.
+
+Other components should be considered experimental or pre-alpha.
+
+* CanvasEffects
+* Cartographer
+* Chromatic
+* DataDelivery
+* Pixelator
+* Viewport
+
