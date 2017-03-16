@@ -1,14 +1,17 @@
+<img align="right" src="images/boots1_flat_300.png">
+
 # RocketBoots Web Game Kit
 
-RocketBoots is an open source kit to help create web games in JavaScript and HTML5.
+RocketBoots is an open source kit to help create web games in JavaScript and HTML5. I wrote it to have a common foundation when making game for Ludum Dare and other game jams.
 
-# How do I use this kit?
+## How do I use this kit?
 
-See the [components instructions](docs/components.md) and [list of components](docs/component-list.md) for the (sparse) documentation.
+* Download the repo as a zip or clone it with GitHub, and add the scripts to your local game project.
+* See the [components instructions](docs/components.md) and [list of components](docs/component-list.md) for the (sparse) documentation.
+* Dig in: I recommend looking through [the RocketBoots code](https://github.com/rocket-boots/rocket-boots/tree/master/scripts/rocketboots) to see what each component offers. 
+* Learn by examples: You might want to look through some of my games' code at https://github.com/deathraygames ... Most games in the last few years use RocketBoots in one way or another.
 
-If you're interested I recommend you look through the RocketBoots code, and some of my games' code at https://github.com/deathraygames ... Most games in the last few years use RocketBoots in one way or another.
-
-# What's included in this repo?
+## What's included in this repo?
 
 At the root you'll find:
 
@@ -19,7 +22,7 @@ At the root you'll find:
     * jquery, lodash, etc.
   * `rocketboots` directory - contains the RocketBoots code
     * `core.js` - the core functionality that RocketBoots needs
-    * *various components* (`.js`) - these can be pulled in individually as needed
+    * [*various components*](docs/component-list.md) (`.js`) - these can be pulled in individually as needed
  * `docs` directory - contains documentation on how to use RocketBoots
   
 You are free to structure your code however you'd like, but RocketBoots will try to use this directory structure for *scripts* by default.
