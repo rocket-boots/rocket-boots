@@ -1,6 +1,6 @@
 # Components
 
-RocketBoots is modular kit, comprised of a *"core"* and [multiple *"components"*](components-list.md). The core handles the basic functionality: creating a root `RocketBoots` object, and allowing it to load components. The components handle everything else, and you can pick and choose which ones you need for your game.
+RocketBoots is modular kit, comprised of a *"core"* and [multiple *"components"*](component-list.md). The core handles the basic functionality: creating a root `RocketBoots` object, and allowing it to load components. The components handle everything else, and you can pick and choose which ones you need for your game.
 
 ## How to load components
 
@@ -70,4 +70,4 @@ Now you have `game.stage`, `game.loop`, and `game.myComponent` to use. The downs
 
 ## What kind of components are there that I can use now?
 
-See the [components list](components-list.md).
+See the [components list](component-list.md).
