@@ -2,7 +2,7 @@
 
 # RocketBoots Web Game Kit
 
-RocketBoots is an open source kit to help create web games in JavaScript and HTML5. I wrote it to have a common foundation when making game for Ludum Dare and other game jams.
+RocketBoots is an open source kit to help create web games in JavaScript and HTML5. I wrote it to have a common foundation when making games for Ludum Dare and other game jams.
 
 ## How do I use this kit?
 
@@ -24,10 +24,13 @@ At the root you'll find:
 * `images` directory
 * `docs` directory - contains documentation on how to use RocketBoots
 * `README.md` (this file)
-* `LICENSE` (MIT, which basically means it's free to use)
+* `LICENSE` (MIT, which basically means it's free to use; does not necessarily apply to the scripts in `libs`)
 
 You are free to structure your code however you'd like, but RocketBoots will try to use this directory structure for *scripts* by default.
 
 ## Contributing
 
 If you have questions, ideas for new features, or found a bug -- please submit an issue on this project in GitHub. If you want to make some code changes, please feel free to fork and submit a pull request. 
+
+
+![HTML5, CSS3, JavaScript, RocketBoots](images/web-stack.png)
