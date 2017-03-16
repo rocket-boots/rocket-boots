@@ -4,7 +4,9 @@ RocketBoots is an open source kit to help create web games in JavaScript and HTM
 
 # How do I use this kit?
 
-There aren't detailed instructions yet, but if you're interested you can look through some of my game's code at https://github.com/deathraygames ... Most games in the last few years use RocketBoots in one way or another. 
+See the [list of components](docs/component-list.md) for the (sparse) documentation.
+
+If you're interested I recommend you look through the RocketBoots code, and some of my games' code at https://github.com/deathraygames ... Most games in the last few years use RocketBoots in one way or another.
 
 # What's included in this repo?
 
