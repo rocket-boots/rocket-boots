@@ -19,6 +19,7 @@
 	};
 	ImageBank.prototype.load = function(imageFileMap, callback) {
 		this.images = this.loadImages(imageFileMap, callback);
+		return this.images;
 	};
 	ImageBank.prototype.loadImages = function(imageFileMap, callback) {
 		var o = this;
