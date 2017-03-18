@@ -27,7 +27,7 @@
 			return this.r;
 		},
 		get theta () {
-			return Math.atan(this.y / this.x);
+			return Math.atan2(this.y, this.x); // http://stackoverflow.com/a/8898965/1766230
 		},
 		set theta (val) {
 			this.setByPolarCoords(this.r, val);
@@ -155,9 +155,9 @@
 		var y = r * Math.sin(theta);
 		return (new Coords(x, y));
 	};
-	Coords.prototype.rotate = function (theta, aroundOriginCoords) {
+	Coords.prototype.rotate = function (deltaTheta, aroundOriginCoords) {
 		this.subtract(aroundOriginCoords);
-		this.setByPolarCoords(this.r, (this.theta + theta));
+		this.setByPolarCoords(this.r, (this.theta + deltaTheta));
 		this.add(aroundOriginCoords);
 		return this;
 	};

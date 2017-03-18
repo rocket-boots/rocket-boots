@@ -135,30 +135,48 @@
 /// Coordinates
 
 	Stage.prototype.getStageCoords = function(pos){
-		var stageCoords = new RocketBoots.Coords(this.getStageX(pos.x), this.getStageY(pos.y));
-		if (this.camera.rotation === 0) {
-			return stageCoords;
-		} else {
-			return stageCoords.rotate(this.camera.rotation, this.camera.pos);
+		if (this.camera.rotation !== 0) {
+			var x = pos.x, y = pos.y;
+			pos = new RocketBoots.Coords(pos);
+			pos.rotate(this.camera.rotation, this.camera.pos);
 		}
+		return (new RocketBoots.Coords(this._getStageX(pos.x), this._getStageY(pos.y)));
 	};
 
 	// NOTE: `getStageX` and `getStageY` do NOT use the camera's rotation
-	Stage.prototype.getStageX = function (x) {
+	Stage.prototype._getStageX = function (x) {
 		return parseInt(((x - this.camera.pos.x) + this._halfSize.x) * this.scale.x);
 	};
-	Stage.prototype.getStageY = function (y) {
+	Stage.prototype._getStageY = function (y) {
 		return parseInt((this._halfSize.y - y + this.camera.pos.y) * this.scale.y);
 	};
 
 	// FIXME: `getPosition` does not use scale or camera's rotation!
+	Stage.prototype.getPositionFromStageCoords = function(stageXY){
+		var pos = new RocketBoots.Coords(
+			(stageXY.x + this.camera.pos.x - this._halfSize.x),
+			(this.camera.pos.y + this._halfSize.y - stageXY.y)
+		);
+		if (this.camera.rotation !== 0) {
+			pos.rotate(-this.camera.rotation, this.camera.pos);
+		}
+		return pos;
+	};
 	Stage.prototype.getPosition = function(stageX, stageY){
-		return {
-			x:	stageX + this.camera.pos.x - this._halfSize.x
-			,y: this.camera.pos.y + this._halfSize.y - stageY
-			//x:	(this.camera.pos.x - stageX)
-			//,y: (this.camera.pos.y - stageY)
-		};		
+		return this.getPositionFromStageCoords({x: stageX, y: stageY});
+	};
+
+	Stage.prototype.getPositionFromEventPageCoords = function (eventPageXY) {
+		var stageRect = this.element.getBoundingClientRect();
+		var stageXY = {
+			x: (eventPageXY.x - stageRect.left),
+			y: (eventPageXY.y - stageRect.top)
+		};
+		return this.getPositionFromStageCoords(stageXY);
+	};
+
+	Stage.prototype.getStageRotation = function(rot){
+		return (rot - this.camera.rotation);
 	};
 
 /// Stage Clicking and Connections
@@ -416,22 +434,23 @@
 		var ctx = this.ctx;
 		var layerSize = this.size;
 		// Find the middle of the entity
-		var stageCoords = this.stage.getStageCoords(ent.pos); 
+		var entStageCoords = this.stage.getStageCoords(ent.pos); 
+		var entStageRotation = this.stage.getStageRotation(ent.rotation);
 		// Find the top/left stage coordinates of the entity
 		var entStageCoordsOffset = new RocketBoots.Coords(
-			stageCoords.x - ent._halfSize.x + ent.stageOffset.x,
-			stageCoords.y - ent._halfSize.y + ent.stageOffset.y
+			entStageCoords.x - ent._halfSize.x + ent.stageOffset.x,
+			entStageCoords.y - ent._halfSize.y + ent.stageOffset.y
 		);
 		// How big is the stage?
-		var stageSize = {
+		var entStageSize = {
 			x: ent.size.x * this.stage.scale.x,
 			y: ent.size.y * this.stage.scale.y
 		};
 
 		// Note: The off-stage calculations don't take rotation into consideration
-		if (entStageCoordsOffset.x > layerSize.x || (entStageCoordsOffset.x + stageSize.x) < 0) {
+		if (entStageCoordsOffset.x > layerSize.x || (entStageCoordsOffset.x + entStageSize.x) < 0) {
 			return false; // off stage (layer), right or left
-		} else if (entStageCoordsOffset.y > layerSize.y || (entStageCoordsOffset.y + stageSize.y) < 0) {
+		} else if (entStageCoordsOffset.y > layerSize.y || (entStageCoordsOffset.y + entStageSize.y) < 0) {
 			return false; // off stage (layer), top or bottom
 		}
 
@@ -439,11 +458,11 @@
 		
 		ctx.save(); // TODO: needed here or does the save/restore in `draw` suffice?
 
-		if (ent.rotation !== 0) {
+		//if (ent.rotation !== 0) {
 			// Method 1
-			ctx.translate(stageCoords.x, stageCoords.y);
-			ctx.rotate(ent.rotation);
-			ctx.translate(-stageCoords.x, -stageCoords.y);
+			ctx.translate(entStageCoords.x, entStageCoords.y);
+			ctx.rotate(entStageRotation);
+			ctx.translate(-entStageCoords.x, -entStageCoords.y);
 
 			// Method 2
 			// TODO: This might be faster, but doesn't work the same as above
@@ -453,26 +472,26 @@
 			// ctx.setTransform(
 			// 	xdx, xdy,  				// direction of the x-axis
 			// 	-xdy, xdx, 				// direction of the y axis (90 clockwise from x axis)
-			// 	stageCoords.x, stageCoords.y 	// set the origin point around which to rotate
+			// 	entStageCoords.x, entStageCoords.y 	// set the origin point around which to rotate
 			// );
-		}
+		//}
 		
 		if (typeof ent.draw.before === 'function') {
-			ent.draw.before(ctx, stageCoords, entStageCoordsOffset, this);
+			ent.draw.before(ctx, entStageCoords, entStageCoordsOffset, this);
 		}
 
 		if (typeof ent.draw.custom === 'function') {
-			ent.draw.custom(ctx, stageCoords, entStageCoordsOffset, this);	
+			ent.draw.custom(ctx, entStageCoords, entStageCoordsOffset, this);	
 		} else {
 			if (ent.image) {
 				ctx.drawImage( ent.image,
 					entStageCoordsOffset.x, entStageCoordsOffset.y,
-					stageSize.x, stageSize.y);
+					entStageSize.x, entStageSize.y);
 			} else {
 				//console.log("Drawing rectangle")
 				ctx.fillStyle = ent.color; // '#ffff66';
 				ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
-					stageSize.x,stageSize.y);	
+					entStageSize.x,entStageSize.y);	
 			}
 		}
 		
@@ -486,13 +505,13 @@
 		}
 
 		if (typeof ent.draw.after === 'function') {
-			ent.draw.after(ctx, stageCoords, entStageCoordsOffset);
+			ent.draw.after(ctx, entStageCoords, entStageCoordsOffset);
 		}
 	
 		/*
 		ctx.strokeStyle = ent.color;
 		ctx.beginPath();
-		ctx.arc(stageCoords.x, stageCoords.y, ent.radius, 0, PI2);
+		ctx.arc(entStageCoords.x, entStageCoords.y, ent.radius, 0, PI2);
 		ctx.stroke();	
 		*/
 		
@@ -559,11 +578,11 @@
 				var lineStart = stage.getStageCoords(coordStart);
 				var lineEnd = stage.getStageCoords(coordEnd);
 				ctx.moveTo(lineStart.x, lineStart.y);
-				ctx.lineTo(lineEnd.x, lineEnd.y);				
+				ctx.lineTo(lineEnd.x, lineEnd.y);
 			}
 
 			// Draw grid
-			ctx.strokeStyle = 'rgba(0,100,255,0.4)';
+			ctx.strokeStyle = 'rgba(10,100,255,0.3)';
 			ctx.beginPath();
 			for (x = world.min.x; x <= world.max.x; x += scale) {
 				drawLine({x: x, y: world.min.y}, {x: x, y: world.max.y});
@@ -572,14 +591,17 @@
 				drawLine({x: world.min.x, y: y}, {x: world.max.x, y: y});
 			}
 			ctx.lineWidth = 1;
+			ctx.closePath();
 			ctx.stroke();
 
 			// Draw x=0 and y=0 lines
-			ctx.strokeStyle = 'rgba(0,100,255,0.6)';
+			ctx.strokeStyle = 'rgba(0,100,255,0.7)';
 			ctx.beginPath();
+			// FIXME: y-axis not displaying correctly
 			drawLine({x: 0, y: world.min.y}, {x: 0, y: world.max.y});
 			drawLine({x: world.min.x, y: 0}, {x: world.max.x, y: 0});
 			ctx.lineWidth = 1;
+			ctx.closePath();
 			ctx.stroke();
 
 		} else {
