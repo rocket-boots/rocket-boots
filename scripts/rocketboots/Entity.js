@@ -182,7 +182,7 @@
 		if (remGroups.indexOf("all") != -1) {	
 			remGroups = ent.groups.join("/").split("/");
 		}
-		console.log("Take", (ent.name || "entity"), "out of groups", remGroups, ent.groups);
+		//console.log("Take", (ent.name || "entity"), "out of groups", remGroups, ent.groups);
 
 		// Loop over groups to remove
 		for (var g = 0; g < remGroups.length; g++){
