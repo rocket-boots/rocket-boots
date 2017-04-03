@@ -305,5 +305,3 @@ var RocketBoots = {
 		return false;
 	}
 };
-
-RocketBoots.init();
