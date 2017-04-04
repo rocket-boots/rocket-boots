@@ -4,21 +4,21 @@
 		classNames:		["Tabs"],
 		requirements:	[], 
 		description:	"",
-		credits:		"By Luke Nickerson, 2016"
+		credits:		"By Luke Nickerson, 2016-2017"
 	};
 
 	var Tabs = component.Tabs = function TabsClass (options){
-		this.setOptions();
+		this.setOptions(options);
 	};
 
 	/* EXAMPLE HTML:
-		<section class="nav">
+		<section class="tabs">
 			<ol>
 				<li><a href="#hopes" class="hopes">Hopes</a></li
 				><li><a href="#dreams" class="dreams">Grimoires</a>
 			</ol>
 		</section>
-		<section class="tabs">
+		<section class="tabbed-content-container">
 			<div class="hopes">
 				<!-- Tab content -->
 			</div>
@@ -29,34 +29,34 @@
 	*/
 
 	/* EXAMPLE CSS:
-		.nav > ol {
+		.tabs > ol {
 			display: block;
 			padding: 0;
 			margin: 0;
 			width: 100%;
 			text-align: center;
 		}
-		.nav > ol > li {
+		.tabs > ol > li {
 			padding: 0;
 			margin: 0;
 			display: inline-block;
 			box-sizing: border-box;
 			width: 25%;	
 		}
-		.nav > ol a {
+		.tabs > ol a {
 			display: inline-block;
 			width: 100%;
 			padding: 1em 0;
 		}
-			.nav > ol a.selected {
+			.tabs > ol a.selected {
 				background-color: rgba(255,255,255,0.3);
 				box-shadow: 0 0 0.5em rgba(0,0,0,0.2);
 			}
 
-		.tabs > div {
+		.tabbed-content-container > div {
 			display: none;
 		}
-			.tabs > div.selected {
+			.tabbed-content-container > div.selected {
 
 				display: block;
 			}
@@ -64,17 +64,16 @@
 
 	Tabs.prototype.setOptions = function (options) {
 		var defaults = {
-			containerSelector: 		'.tabs-container',
-			tabsContainerSelector: 	'.tabs',
-			tabsContentSelector: 	'.tabs > div',
-			navContainerSelector: 	'.nav > ol',
-			navClickableSelector: 	'a',
-			navSelector: 			null, 
-			selectedClass: 			'selected',
-			$nav: 					null,
-			$content: 				null,
-			showWithJQuery: 		false,
-			closeClass: 			'close'
+			containerSelector: 				'.tabs-container',
+			tabbedContentContainerSelector: 	'.tabbed-content-container',
+			tabbedContentSelector: 				'div',
+			tabsContainerSelector: 				'.tabs',
+			tabsSelector: 						'a',
+			selectedClass: 						'selected',
+			$nav: 								null,
+			$content: 							null,
+			showWithJQuery: 					false,
+			closeClass: 						'close'
 		};
 		$.extend(this, defaults, options);
 		return this;	
@@ -82,14 +81,17 @@
 
 	Tabs.prototype.setup = function (options) {	
 		var tabs = this;
+		var navSelector;
+		var contentSelector;
 		if (typeof options === 'object') {
 			tabs.setOptions(options);
 		}
-		tabs.$content = $(tabs.tabsContentSelector);
-		tabs.navSelector = tabs.navContainerSelector + ' ' + tabs.navClickableSelector;
-		tabs.$nav = $(tabs.navSelector);
+		contentSelector = tabs.tabbedContentContainerSelector + ' ' + tabs.tabbedContentSelector;
+		navSelector = tabs.tabsContainerSelector + ' ' + tabs.tabsSelector;
+		tabs.$content = $(contentSelector);
+		tabs.$nav = $(navSelector);
 
-		$(tabs.navContainerSelector).off("click").on("click", tabs.navClickableSelector, function(e){
+		$(tabs.tabsContainerSelector).off("click").on("click", tabs.tabsSelector, function(e){
 			tabs.selectByElement( $(e.target) );
 		});
 
@@ -137,16 +139,6 @@
 		return tabs;
 	};
 
-
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
-		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
-		}
-	}
-
 	Tabs.prototype.open = function () {
 		var tabs = this;
 		$(tabs.containerSelector).show();
@@ -158,4 +150,16 @@
 		$(tabs.containerSelector).hide();
 		return tabs;
 	};
+
+
+
+	// Install into RocketBoots if it exists
+	if (typeof RocketBoots === "object") {
+		RocketBoots.installComponent(component);
+	} else { // Otherwise put the classes on the global window object
+		for (var i = 0; i < component.classNames.length; i++) {
+			window[component.classNames[i]] = component[component.classNames[i]];
+		}
+	}
+
 })();
