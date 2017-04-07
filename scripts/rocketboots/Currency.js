@@ -15,6 +15,19 @@
 		this.symbolBefore 	= true;
 		//this.showRate		= (typeof options.showRate === "boolean") ? options.showRate : true;
 		//this.showMax		= (typeof options.showMax === "boolean") ? options.showMax : false;
+		if (typeof options.rate === "function") {
+			options.calcRate = options.rate;
+		}
+		if (typeof options.min === "function") {
+			options.calcMin = options.min;
+		}
+		if (typeof options.max === "function") {
+			options.calcMax = options.max;
+		}
+		if (typeof options.value === "function") {
+			options.calcValue = options.value;
+		}
+
 		this.rate 			= getDefaultNumber(options.rate, 0); // Increase per step
 		this.min 			= getDefaultNumber(options.min, 0);
 		this.max 			= getDefaultNumber(options.max, 1000000000000000); // 1 quadrillion default (max safe value is 9,007,199,254,740,991)
@@ -34,6 +47,7 @@
 		//this.hasCalculations = (options.calcRate || options.calcValue || options.calcMax) ? true : false;
 		this.calcRate 	= (options.calcRate || undefined);
 		this.calcValue 	= (options.calcValue || options.calcVal || undefined);
+		this.calcMin 	= (options.calcMin || undefined);
 		this.calcMax 	= (options.calcMax || undefined);
 		this.calcVal = this.calcValue; // alias
 
@@ -87,7 +101,7 @@
 			// all good, hopefully
 		} else {
 			console.warn("Bad selectors", selectors);
-			return false;
+			return {};
 		}
 		if (!(selectors.val instanceof Array)) { selectors.val = []; }
 		if (!(selectors.rate instanceof Array)) { selectors.rate = []; }
@@ -271,8 +285,12 @@
 
 	Currency.prototype.drawValue = function (valueType) {
 		var elementsArray = this.elements[valueType];
-		var i = elementsArray.length;
+		var i;
 		var html;
+		if (elementsArray === undefined) {
+			return false;
+		}
+		i = elementsArray.length;
 		while (i--) {
 			if (elementsArray[i] !== null) {
 				switch (valueType) {
@@ -294,6 +312,7 @@
 				elementsArray[i].innerHTML = html;
 			}
 		}
+		return true;
 	};
 
 	Currency.prototype._increment = function(steps){
