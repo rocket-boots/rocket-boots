@@ -39,10 +39,9 @@
 					}
 				}
 			});
-			if (ent1.world.isBounded) {
-				ent1.world.keepCoordsInBounds(ent1.pos);
+			if (world.isBounded) {
+				world.keepCoordsInBounds(ent1.pos);
 			}
-			
 		});
 	}
 
