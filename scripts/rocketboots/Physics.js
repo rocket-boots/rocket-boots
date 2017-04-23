@@ -8,42 +8,86 @@
 	};
 
 	var Physics = component.Physics = function(){
-	
+		this.isCollisionDetectionOn = true;
+		this.isObjectGravityOn = false;
+		//this.isLinearGravityOn = true;
+		this.elasticity = 0.7;
+		this.gravitationalConstant = 0.5; // "big G"
 	}
 	Physics.prototype.apply = function(world){
 		var p = this;
 		// Loop over all movable entities
 		world.loopOverEntities("physics",function(entity1Index, ent1){	
-			// Move according to velocity
-			ent1.pos.add( ent1.vel );
+
+			if (ent1.isImmovable) {
+				o.force.clear();
+				o.acc.clear();
+				o.vel.clear();
+			} else if (ent1.mass > 0) {
+				var forceAcc;
+				// Standard newtonian physics...
+				ent1.force.add(ent1.impulse);
+				forceAcc = new RocketBoots.Coords((ent1.force.x / ent1.mass), (ent1.force.y / ent1.mass));
+				ent1.acc.add(forceAcc);
+				ent1.vel.add(ent1.acc);
+				ent1.pos.add(ent1.vel);
+				ent1.acc.clear();
+				ent1.force.clear();
+			}
 			
 			// Collision detection
-			world.loopOverEntities("physical",function(entity2Index, ent2){
-				var r = ent1.pos.getDistance(ent2.pos);
-				if (r == 0) {
-					// Don't do anything (Black hole or ent2 is the same as ent1)
-				} else {
-					var edgeToEdgeDist = r - ent1.radius - ent2.radius;
-					if (edgeToEdgeDist <= 0) {
-						//console.log("hit");
-						
-						var pushBack = edgeToEdgeDist / 1; //(edgeToEdgeDist / 1);
-						if (ent1.mass <= ent2.mass) {
-							ent1.pos.add( ent1.pos.getUnitVector(ent2.pos).multiply(pushBack) );
-						} else {
-							ent2.pos.add( ent2.pos.getUnitVector(ent1.pos).multiply(pushBack) );           
+			if (p.isCollisionDetectionOn) {
+				world.loopOverEntities("physical", function(entity2Index, ent2){
+					var r = ent1.pos.getDistance(ent2.pos);
+					if (r == 0) {
+						// Don't do anything (Black hole or ent2 is the same as ent1)
+					} else {
+						var edgeToEdgeDist = r - ent1.radius - ent2.radius;
+						if (edgeToEdgeDist <= 0) {
+							//console.log("hit");
+							
+							var pushBack = edgeToEdgeDist / 1; //(edgeToEdgeDist / 1);
+							if (ent1.mass <= ent2.mass) {
+								ent1.pos.add( ent1.pos.getUnitVector(ent2.pos).multiply(pushBack) );
+							} else {
+								ent2.pos.add( ent2.pos.getUnitVector(ent1.pos).multiply(pushBack) );           
+							}
+							
+							p.setNewCollisionVels(ent1, ent2, p.elasticity);
 						}
-						
-						p.setNewCollisionVels(ent1, ent2, 0.7);
-						
 					}
-				}
-			});
+				});
+			}
+
+			if (p.isObjectGravityOn) {
+				world.loopOverEntities("gravity", function(entity2Index, ent2){
+					p.applyGravityForce(ent1, ent2);
+				});
+			}
+
 			if (world.isBounded) {
 				world.keepCoordsInBounds(ent1.pos);
 			}
 		});
+	};
+
+	Physics.prototype.applyGravityForce = function (o1, o2) {
+		// Apply gravity forces: F = G (m1 m2) / r^2
+		// http://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form
+		//console.log("Forces on", o1.name, " due to ", o2.name);
+		var r = o1.pos.getDistance(o2.pos);
+		var rv = o1.pos.getUnitVector(o2.pos);
+		//console.log("unit vector", JSON.stringify(rv));
+		
+		var Gmm = this.gravitationalConstant * o1.mass * o2.mass;
+		var rSquared = Math.pow(r, 2);
+		var n = (rSquared == 0) ? 0 : (Gmm/rSquared);
+		rv.multiply(n);
+		//console.log(JSON.stringify(rv));
+		o1.force.add(rv);
+		//console.log("physics", i, b, o1.bigG, o1.mass, o2.mass);
 	}
+	
 
 	Physics.prototype.setNewCollisionVels = function(o1, o2, elasticity){
 		// http://www.gamasutra.com/view/feature/131424/pool_hall_lessons_fast_accurate_.php?page=3

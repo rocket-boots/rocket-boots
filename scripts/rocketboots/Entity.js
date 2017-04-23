@@ -16,31 +16,34 @@
 			options = options || {};
 		}
 		options = _.extend({
-			name: 			null,
-			groups: 		[],
-			world: 			null,
-			size: 			{ x: 10, y: 10 },
-			pos: 			{ x: 0, y: 0 },
-			vel: 			{ x: 0, y: 0 },
+			name:			null,
+			groups:			[],
+			world:			null,
+			size:			{ x: 10, y: 10 },
+			pos:			{ x: 0, y: 0 },
+			vel:			{ x: 0, y: 0 },
+			acc:			{ x: 0, y: 0 },
+			force:			{ x: 0, y: 0 },
+			impulse:		{ x: 0, y: 0 },
 			radius:			null,
-			rotation: 		0,
-			mass: 			null,
-			image: 			null,
-			color: 			"#ff7733",
+			rotation:		0,
+			mass:			null,
+			image:			null,
+			color:			"#ff7733",
 			stageOffset: 	{ x: 0, y: 0 }, // for minor pixel offsets
 			//collisionShape: "circle", // TODO: add functionality
 			isHighlighted: 	false,
 			isPhysical: 	true,
-			isMovable: 		true,
-			isVisible: 		true,
+			isMovable:		true,
+			isVisible:		true,
 			draw: {
 				before: 	null,
 				custom: 	null,
 				highlight: 	null,
-				after: 		null				
+				after:		null				
 			},
 			entityGroups: 	[],
-			entities: 		{}
+			entities:		{}
 		}, options);
 
 		_.extend(this, options);
@@ -61,6 +64,9 @@
 		this.stageOffset 	= new RocketBoots.Coords(this.stageOffset.x, this.stageOffset.y); 
 		this.pos 			= new RocketBoots.Coords(this.pos.x, this.pos.y);
 		this.vel 			= new RocketBoots.Coords(this.vel.x, this.vel.y);
+		this.acc 			= new RocketBoots.Coords(this.acc.x, this.acc.y);
+		this.force 			= new RocketBoots.Coords(this.force.x, this.force.y);
+		this.impulse 		= new RocketBoots.Coords(this.impulse.x, this.impulse.y);
 		this.size 			= new RocketBoots.Coords(this.size.x, this.size.y);
 		this._halfSize 		= new RocketBoots.Coords(this.size.x/2, this.size.y/2);
 
