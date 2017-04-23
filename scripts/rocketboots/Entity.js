@@ -51,15 +51,19 @@
 		if (this.mass === null) {
 			this.mass		= (this.size.x * this.size.y);
 		}
+		if (this.radius === null) {
+			this.radius = parseInt(this.size.x/2);
+		}
+		if (typeof options.radius === 'number') {
+			this.size.x = this.size.y = (this.radius * 2);
+		}
 		// Make sure coords are actual Coords objects
 		this.stageOffset 	= new RocketBoots.Coords(this.stageOffset.x, this.stageOffset.y); 
 		this.pos 			= new RocketBoots.Coords(this.pos.x, this.pos.y);
 		this.vel 			= new RocketBoots.Coords(this.vel.x, this.vel.y);
 		this.size 			= new RocketBoots.Coords(this.size.x, this.size.y);
 		this._halfSize 		= new RocketBoots.Coords(this.size.x/2, this.size.y/2);
-		if (this.radius === null) {
-			this.radius = parseInt(this.size.x/2);
-		}
+
 	};
 	component.Entity = Entity;
 
