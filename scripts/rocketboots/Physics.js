@@ -36,7 +36,7 @@
 			}
 			
 			// Collision detection
-			if (p.isCollisionDetectionOn || p.isObjectGravityOn) {
+			if (p.isCollisionDetectionOn) {
 				world.loopOverEntities("physical", function(entity2Index, ent2){
 					var r = ent1.pos.getDistance(ent2.pos);
 					if (p.isCollisionDetectionOn) {
@@ -58,9 +58,11 @@
 							}
 						}
 					}
-					if (p.isObjectGravityOn) {
-						p.applyGravityForce(ent1, ent2, r);
-					}
+				});
+			}
+			if (p.isObjectGravityOn) {
+				world.loopOverEntities("physics", function(entity2Index, ent2){
+					p.applyGravityForce(ent1, ent2);
 				});
 			}
 
@@ -70,14 +72,12 @@
 		});
 	};
 
-	Physics.prototype.applyGravityForce = function (o1, o2, r) {
-		var rv, Gmm, rSquared, n;
+	Physics.prototype.applyGravityForce = function (o1, o2) {
+		var r, rv, Gmm, rSquared, n;
 		// Apply gravity forces: F = G (m1 m2) / r^2
 		// http://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form
 		//console.log("Forces on", o1.name, " due to ", o2.name);
-		if (typeof r === 'undefined') {
-			r = o1.pos.getDistance(o2.pos);
-		}
+		r = o1.pos.getDistance(o2.pos);
 		rv = o1.pos.getUnitVector(o2.pos);
 		//console.log("unit vector", JSON.stringify(rv));
 		

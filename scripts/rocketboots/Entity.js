@@ -51,9 +51,6 @@
 		if (this.name === null) {
 			this.name = "Entity-" + Math.round(Math.random() * 999999);
 		}
-		if (this.mass === null) {
-			this.mass		= (this.size.x * this.size.y);
-		}
 		if (this.radius === null) {
 			this.radius = parseInt(this.size.x/2);
 		}
@@ -69,7 +66,9 @@
 		this.impulse 		= new RocketBoots.Coords(this.impulse.x, this.impulse.y);
 		this.size 			= new RocketBoots.Coords(this.size.x, this.size.y);
 		this._halfSize 		= new RocketBoots.Coords(this.size.x/2, this.size.y/2);
-
+		if (this.mass === null) {
+			this.mass		= (this.size.x * this.size.y);
+		}
 	};
 	component.Entity = Entity;
 
