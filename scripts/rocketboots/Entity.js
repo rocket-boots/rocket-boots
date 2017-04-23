@@ -90,24 +90,24 @@
 	
 	// Put in / take out
 	Entity.prototype.putIn = function(ent, groups, isFront){
-		if (typeof groups == "string") groups = [groups];
-		if (typeof isFront != "boolean") isFront = false;
-		var grp = "", groupIndex = -1;
+		if (typeof groups == "string") { groups = [groups]; }
+		if (typeof isFront != "boolean") { isFront = false; }
+		var grp = "", t;
 		groups = groups.concat("all");
 		//console.log("Putting ", ent.name, " into ", groups);
 		// Add entity to groups
-		for (var t = 0; t < groups.length; t++){
+		for (t = 0; t < groups.length; t++){
 			grp = groups[t];
 			this.addEntityGroup(grp);
 			//console.log(ent);
 			if (!ent.isInGroup(grp)) {  // Is entity not in this group yet?
-				groupIndex = (this.entities[grp].push(ent) - 1);
 				if (isFront) {
-					ent.groups = [grp].concat(ent.groups);
+					this.entities[grp] = [ent].concat(this.entities[grp]);
 				} else {
-					ent.groups.push(grp);
+					this.entities[grp].push(ent);
 				}
-				//ent.groupIndices[grp] = groupIndex;
+				ent.groups.push(grp);
+				// ent.groups = [grp].concat(ent.groups); // reverse order
 			} else {
 				console.warn('Entity already in group', grp, ent, this.groups);
 			}
