@@ -517,6 +517,7 @@
 			ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
 				entStageSize.x, entStageSize.y);
 		} else if (ent.draw === 'circle') {
+			ctx.beginPath();
 			ctx.arc(entStageCoords.x, entStageCoords.y, ent.radius, 0, this._TWO_PI);
 			ctx.closePath();
 			ctx.fill();			
