@@ -36,32 +36,37 @@
 			}
 			
 			// Collision detection
-			if (p.isCollisionDetectionOn) {
+			if (p.isCollisionDetectionOn || p.isObjectGravityOn) {
 				world.loopOverEntities("physical", function(entity2Index, ent2){
 					var r = ent1.pos.getDistance(ent2.pos);
-					if (r == 0) {
-						// Don't do anything (Black hole or ent2 is the same as ent1)
-					} else {
-						var edgeToEdgeDist = r - ent1.radius - ent2.radius;
-						if (edgeToEdgeDist <= 0) {
-							//console.log("hit");
-							
-							var pushBack = edgeToEdgeDist / 1; //(edgeToEdgeDist / 1);
-							if (ent1.mass <= ent2.mass) {
-								ent1.pos.add( ent1.pos.getUnitVector(ent2.pos).multiply(pushBack) );
-							} else {
-								ent2.pos.add( ent2.pos.getUnitVector(ent1.pos).multiply(pushBack) );           
+					if (p.isCollisionDetectionOn) {
+						if (r == 0) {
+							// Don't do anything (Black hole or ent2 is the same as ent1)
+						} else {
+							var edgeToEdgeDist = r - ent1.radius - ent2.radius;
+							if (edgeToEdgeDist <= 0) {
+								//console.log("hit");
+								
+								var pushBack = edgeToEdgeDist / 1; //(edgeToEdgeDist / 1);
+								if (ent1.mass <= ent2.mass) {
+									ent1.pos.add( ent1.pos.getUnitVector(ent2.pos).multiply(pushBack) );
+								} else {
+									ent2.pos.add( ent2.pos.getUnitVector(ent1.pos).multiply(pushBack) );           
+								}
+								
+								p.setNewCollisionVels(ent1, ent2, p.elasticity);
 							}
-							
-							p.setNewCollisionVels(ent1, ent2, p.elasticity);
 						}
+					}
+					if (p.isObjectGravityOn) {
+						p.applyGravityForce(ent1, ent2, r);
 					}
 				});
 			}
 
-			if (p.isObjectGravityOn) {
+			
 				world.loopOverEntities("gravity", function(entity2Index, ent2){
-					p.applyGravityForce(ent1, ent2);
+					
 				});
 			}
 
@@ -71,17 +76,20 @@
 		});
 	};
 
-	Physics.prototype.applyGravityForce = function (o1, o2) {
+	Physics.prototype.applyGravityForce = function (o1, o2, r) {
+		var rv, Gmm, rSquared, n;
 		// Apply gravity forces: F = G (m1 m2) / r^2
 		// http://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form
 		//console.log("Forces on", o1.name, " due to ", o2.name);
-		var r = o1.pos.getDistance(o2.pos);
-		var rv = o1.pos.getUnitVector(o2.pos);
+		if (typeof r === 'undefined') {
+			r = o1.pos.getDistance(o2.pos);
+		}
+		rv = o1.pos.getUnitVector(o2.pos);
 		//console.log("unit vector", JSON.stringify(rv));
 		
-		var Gmm = this.gravitationalConstant * o1.mass * o2.mass;
-		var rSquared = Math.pow(r, 2);
-		var n = (rSquared == 0) ? 0 : (Gmm/rSquared);
+		Gmm = this.gravitationalConstant * o1.mass * o2.mass;
+		rSquared = Math.pow(r, 2);
+		n = (rSquared == 0) ? 0 : (Gmm/rSquared);
 		rv.multiply(n);
 		//console.log(JSON.stringify(rv));
 		o1.force.add(rv);
