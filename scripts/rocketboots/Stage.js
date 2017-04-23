@@ -235,6 +235,8 @@
 		if (coords instanceof RocketBoots.Coords) {
 			this.followCoords = coords;
 			this.focus();
+		} else if (typeof coords === 'object' && coords.pos instanceof RocketBoots.Coords) {
+			return this.follow(coords.pos);
 		} else {
 			console.warn('Could not follow bad coordinates: ', coords);
 		}
