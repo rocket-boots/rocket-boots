@@ -102,7 +102,7 @@
 			//console.log(ent);
 			if (!ent.isInGroup(grp)) {  // Is entity not in this group yet?
 				if (isFront) {
-					this.entities[grp] = [ent].concat(this.entities[grp]);
+					this.entities[grp].unshift(ent);
 				} else {
 					this.entities[grp].push(ent);
 				}
