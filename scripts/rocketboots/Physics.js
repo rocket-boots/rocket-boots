@@ -33,10 +33,20 @@
 				ent1.pos.add(ent1.vel);
 				ent1.acc.clear();
 				ent1.force.clear();
+				ent1.impulse.clear();
 			}
-			
-			// Collision detection
-			if (p.isCollisionDetectionOn) {
+			if (p.isObjectGravityOn) {
+				world.loopOverEntities("physics", function(entity2Index, ent2){
+					p.applyGravityForce(ent1, ent2);
+				});
+			}
+			if (world.isBounded) {
+				world.keepCoordsInBounds(ent1.pos);
+			}
+		});			
+
+		if (p.isCollisionDetectionOn) {
+			world.loopOverEntities("physical", function(entity2Index, ent1){
 				world.loopOverEntities("physical", function(entity2Index, ent2){
 					var r = ent1.pos.getDistance(ent2.pos);
 					if (p.isCollisionDetectionOn) {
@@ -59,17 +69,11 @@
 						}
 					}
 				});
-			}
-			if (p.isObjectGravityOn) {
-				world.loopOverEntities("physics", function(entity2Index, ent2){
-					p.applyGravityForce(ent1, ent2);
-				});
-			}
-
+			});
 			if (world.isBounded) {
 				world.keepCoordsInBounds(ent1.pos);
 			}
-		});
+		}
 	};
 
 	Physics.prototype.applyGravityForce = function (o1, o2) {
