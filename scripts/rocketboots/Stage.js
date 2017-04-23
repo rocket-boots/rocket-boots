@@ -479,7 +479,7 @@
 			// );
 		//}
 		
-		ctx.fillStyle = ent.color;
+		
 
 		if (typeof ent.draw === 'object') {			// OLD METHOD
 			if (typeof ent.draw.before === 'function') {
@@ -494,6 +494,7 @@
 						entStageCoordsOffset.x, entStageCoordsOffset.y,
 						entStageSize.x, entStageSize.y);
 				} else {
+					ctx.fillStyle = ent.color;
 					ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
 						entStageSize.x, entStageSize.y);	
 				}
@@ -514,10 +515,12 @@
 		} else if (typeof ent.draw === 'function') { 	// NEW METHOD (half-baked)
 			ent.draw(ctx, entStageCoords, entStageCoordsOffset, entStageSize, this, ent);
 		} else if (ent.draw === 'rectangle') {
+			ctx.fillStyle = ent.color;
 			ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
 				entStageSize.x, entStageSize.y);
 		} else if (ent.draw === 'circle') {
 			ctx.beginPath();
+			ctx.fillStyle = ent.color;
 			ctx.arc(entStageCoords.x, entStageCoords.y, ent.radius, 0, this._TWO_PI);
 			ctx.closePath();
 			ctx.fill();			
