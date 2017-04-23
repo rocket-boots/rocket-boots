@@ -64,12 +64,6 @@
 				});
 			}
 
-			
-				world.loopOverEntities("gravity", function(entity2Index, ent2){
-					
-				});
-			}
-
 			if (world.isBounded) {
 				world.keepCoordsInBounds(ent1.pos);
 			}
