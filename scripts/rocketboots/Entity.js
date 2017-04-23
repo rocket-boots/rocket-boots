@@ -36,12 +36,7 @@
 			isPhysical: 	true,
 			isMovable:		true,
 			isVisible:		true,
-			draw: {
-				before: 	null,
-				custom: 	null,
-				highlight: 	null,
-				after:		null				
-			},
+			draw: 			"rectangle", // Can be function, object of functions, or string
 			entityGroups: 	[],
 			entities:		{}
 		}, options);

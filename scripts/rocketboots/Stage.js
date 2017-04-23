@@ -321,6 +321,7 @@
 		this.worldGridScale = 0;
 		this.world = null;
 		this.getEntitiesArray;
+		this._TWO_PI = Math.PI * 2;
 		// TODO: Make sure that this layer has position: absolute/relative
 		this.resize();
 		return this;
@@ -478,36 +479,47 @@
 			// );
 		//}
 		
-		if (typeof ent.draw.before === 'function') {
-			ent.draw.before(ctx, entStageCoords, entStageCoordsOffset, this, ent);
-		}
+		ctx.fillStyle = ent.color;
 
-		if (typeof ent.draw.custom === 'function') {
-			ent.draw.custom(ctx, entStageCoords, entStageCoordsOffset, this, ent);	
-		} else {
-			if (ent.image) {
-				ctx.drawImage( ent.image,
-					entStageCoordsOffset.x, entStageCoordsOffset.y,
-					entStageSize.x, entStageSize.y);
-			} else {
-				//console.log("Drawing rectangle")
-				ctx.fillStyle = ent.color; // '#ffff66';
-				ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
-					entStageSize.x,entStageSize.y);	
+		if (typeof ent.draw === 'object') {			// OLD METHOD
+			if (typeof ent.draw.before === 'function') {
+				ent.draw.before(ctx, entStageCoords, entStageCoordsOffset, this, ent, entStageSize);
 			}
-		}
-		
-		if (ent.isHighlighted) {
-			if (typeof ent.draw.highlight == 'function') {
-				ent.draw.highlight();
-			} else {
-				//ctx.strokeStyle = '#ff0000';
-				ctx.strokeRect(entStageCoordsOffset.x, entStageCoordsOffset.y, ent.size.x, ent.size.y);
-			}
-		}
 
-		if (typeof ent.draw.after === 'function') {
-			ent.draw.after(ctx, entStageCoords, entStageCoordsOffset, this, ent);
+			if (typeof ent.draw.custom === 'function') {
+				ent.draw.custom(ctx, entStageCoords, entStageCoordsOffset, this, ent, entStageSize);	
+			} else {
+				if (ent.image) {
+					ctx.drawImage( ent.image,
+						entStageCoordsOffset.x, entStageCoordsOffset.y,
+						entStageSize.x, entStageSize.y);
+				} else {
+					ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
+						entStageSize.x, entStageSize.y);	
+				}
+			}
+			
+			if (ent.isHighlighted) {
+				if (typeof ent.draw.highlight == 'function') {
+					ent.draw.highlight();
+				} else {
+					//ctx.strokeStyle = '#ff0000';
+					ctx.strokeRect(entStageCoordsOffset.x, entStageCoordsOffset.y, ent.size.x, ent.size.y);
+				}
+			}
+
+			if (typeof ent.draw.after === 'function') {
+				ent.draw.after(ctx, entStageCoords, entStageCoordsOffset, this, ent, entStageSize);
+			}
+		} else if (typeof ent.draw === 'function') { 	// NEW METHOD (half-baked)
+			ent.draw(ctx, entStageCoords, entStageCoordsOffset, entStageSize, this, ent);
+		} else if (ent.draw === 'rectangle') {
+			ctx.fillRect(entStageCoordsOffset.x, entStageCoordsOffset.y, 
+				entStageSize.x, entStageSize.y);
+		} else if (ent.draw === 'circle') {
+			ctx.arc(entStageCoords.x, entStageCoords.y, ent.radius, 0, this._TWO_PI);
+			ctx.closePath();
+			ctx.fill();			
 		}
 	
 		/*
