@@ -479,11 +479,11 @@
 		//}
 		
 		if (typeof ent.draw.before === 'function') {
-			ent.draw.before(ctx, entStageCoords, entStageCoordsOffset, this);
+			ent.draw.before(ctx, entStageCoords, entStageCoordsOffset, this, ent);
 		}
 
 		if (typeof ent.draw.custom === 'function') {
-			ent.draw.custom(ctx, entStageCoords, entStageCoordsOffset, this);	
+			ent.draw.custom(ctx, entStageCoords, entStageCoordsOffset, this, ent);	
 		} else {
 			if (ent.image) {
 				ctx.drawImage( ent.image,
@@ -507,7 +507,7 @@
 		}
 
 		if (typeof ent.draw.after === 'function') {
-			ent.draw.after(ctx, entStageCoords, entStageCoordsOffset);
+			ent.draw.after(ctx, entStageCoords, entStageCoordsOffset, this, ent);
 		}
 	
 		/*
