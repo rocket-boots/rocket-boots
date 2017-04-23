@@ -22,6 +22,7 @@
 			size: 			{ x: 10, y: 10 },
 			pos: 			{ x: 0, y: 0 },
 			vel: 			{ x: 0, y: 0 },
+			radius:			null,
 			rotation: 		0,
 			mass: 			null,
 			image: 			null,
@@ -56,7 +57,9 @@
 		this.vel 			= new RocketBoots.Coords(this.vel.x, this.vel.y);
 		this.size 			= new RocketBoots.Coords(this.size.x, this.size.y);
 		this._halfSize 		= new RocketBoots.Coords(this.size.x/2, this.size.y/2);
-		this.radius 		= parseInt(this.size.x/2);
+		if (this.radius === null) {
+			this.radius = parseInt(this.size.x/2);
+		}
 	};
 	component.Entity = Entity;
 
