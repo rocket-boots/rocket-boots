@@ -18,7 +18,6 @@
 		var p = this;
 		// Loop over all movable entities
 		world.loopOverEntities("physics",function(entity1Index, ent1){	
-
 			if (ent1.isImmovable) {
 				o.force.clear();
 				o.acc.clear();
@@ -69,10 +68,10 @@
 						}
 					}
 				});
+				if (world.isBounded) {
+					world.keepCoordsInBounds(ent1.pos);
+				}
 			});
-			if (world.isBounded) {
-				world.keepCoordsInBounds(ent1.pos);
-			}
 		}
 	};
 
