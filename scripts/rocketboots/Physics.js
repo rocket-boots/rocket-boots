@@ -2,9 +2,9 @@
 	var component = {
 		fileName: 		"Physics",
 		classNames:		["Physics"],
-		requirements:	[], // Entity?
+		requirements:	[], // Dependent on Entity-like objects, but not a strict requirement
 		description:	"Physics class",
-		credits:		"By Luke Nickerson, 2014, some funcitons from stardust.js"
+		credits:		"By Luke Nickerson, 2014, 2017, originally from stardust.js"
 	};
 
 	var Physics = component.Physics = function(){
@@ -19,21 +19,21 @@
 		// Loop over all movable entities
 		world.loopOverEntities("physics",function(entity1Index, ent1){	
 			if (ent1.isImmovable) {
-				o.force.clear();
-				o.acc.clear();
-				o.vel.clear();
+				ent1.vel.clear();
 			} else if (ent1.mass > 0) {
-				var forceAcc;
+				let forceAcc;
 				// Standard newtonian physics...
 				ent1.force.add(ent1.impulse);
 				forceAcc = new RocketBoots.Coords((ent1.force.x / ent1.mass), (ent1.force.y / ent1.mass));
 				ent1.acc.add(forceAcc);
 				ent1.vel.add(ent1.acc);
 				ent1.pos.add(ent1.vel);
-				ent1.acc.clear();
-				ent1.force.clear();
-				ent1.impulse.clear();
 			}
+			// Acceleration, force, and impulse are momentary forces as currently coded
+			ent1.acc.clear();
+			ent1.force.clear();
+			ent1.impulse.clear();
+			// Do gravity between objects
 			if (p.isObjectGravityOn) {
 				world.loopOverEntities("physics", function(entity2Index, ent2){
 					p.applyGravityForce(ent1, ent2);
@@ -52,11 +52,11 @@
 						if (r == 0) {
 							// Don't do anything (Black hole or ent2 is the same as ent1)
 						} else {
-							var edgeToEdgeDist = r - ent1.radius - ent2.radius;
+							let edgeToEdgeDist = r - ent1.radius - ent2.radius;
 							if (edgeToEdgeDist <= 0) {
 								//console.log("hit");
 								
-								var pushBack = edgeToEdgeDist / 1; //(edgeToEdgeDist / 1);
+								let pushBack = edgeToEdgeDist / 1; //(edgeToEdgeDist / 1);
 								if (ent1.mass <= ent2.mass) {
 									ent1.pos.add( ent1.pos.getUnitVector(ent2.pos).multiply(pushBack) );
 								} else {
