@@ -4,8 +4,8 @@
 		classNames:		["Keyboard"],
 		requirements:	[],
 		description:	"Component to make keyboard events easier to setup; still needs work.",
-		version: 		"beta-2",
-		credits:		"By Luke Nickerson, 2016"
+		version: 		"beta-3",
+		credits:		"By Luke Nickerson, 2016, 2017"
 	};
 	component.Keyboard = Keyboard;
 	function Keyboard (){
@@ -16,41 +16,62 @@
 	};
 
 	// http://unixpapa.com/js/key.html
+	// https://css-tricks.com/snippets/javascript/javascript-keycodes/
 	Keyboard.prototype._keyCodeMap = {
+		"8":	"BACKSPACE",
 		"9":	"TAB",
-
 		"13":	"ENTER",
-
+		"16":	"SHIFT",
+		"17":	"CTRL",
+		"18":	"ALT",
+		"19":	"PAUSE",
+		"20":	"CAPSLOCK",
 		"27":	"ESC",
-
 		"32":	"SPACE",
-
+		"33":	"PAGEUP",
+		"34":	"PAGEDOWN",
+		"35":	"END",
+		"36":	"HOME",
 		"37": 	"LEFT",
 		"38":	"UP",
 		"39":	"RIGHT",
 		"40":	"DOWN",
+		"45":	"INSERT",
+		"46":	"DELETE",
 
-		"48":	"0",
-		"49":	"1",
-		"50":	"2",
-		"51":	"3",
-		"52":	"4",
-		"53":	"5",
-		"54":	"6",
-		"55":	"7",
-		"56":	"8",
-		"57":	"9",
+		"48":	"0", // )
+		"49":	"1", // !
+		"50":	"2", // @
+		"51":	"3", // #
+		"52":	"4", // $
+		"53":	"5", // %
+		"54":	"6", // ^
+		"55":	"7", // &
+		"56":	"8", // *
+		"57":	"9", // (
 
 		"65":	"a",
-
+		"66":	"b",
+		"67":	"c",
 		"68":	"d",
 		"69":	"e",
-
+		"70":	"f",
+		"71":	"g",
+		"72":	"h",
+		"73":	"i",
+		"74":	"j",
+		"75":	"k",
+		"76":	"l",
+		"77":	"m",
+		"78":	"n",
+		"79":	"o",
 		"80":	"p",
 		"81":	"q",
-
+		"82":	"r",
 		"83":	"s",
-
+		"84":	"t",
+		"85":	"u",
+		"86":	"v",
 		"87":	"w",
 		"88":	"x",
 		"89":	"y",
@@ -72,7 +93,10 @@
 		"187":	"=", // also "+"
 
 		"189":	"-", // also "_"
-		
+
+		"219":	"[", // {
+
+		"221": 	"]", // }
 	};
 
 	Keyboard.prototype.getKeyFromKeyCode = function (keyCode) {
