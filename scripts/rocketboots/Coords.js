@@ -87,6 +87,12 @@
 		this.y = Math.round(this.y);
 		return this;
 	};
+	Coords.prototype.clear = function(){
+		this.x = 0;
+		this.y = 0;
+		return this;
+	};
+
 	Coords.prototype.getMultiply = function(n){
 		var x = this.x * n;
 		var y = this.y * n;
@@ -98,17 +104,18 @@
 		// this.getMagnitude() * coord.getMagnitude()    ???
 		return ((this.x * coord.x) + (this.y * coord.y));
 	};
-	Coords.prototype.clear = function(){
-		this.x = 0;
-		this.y = 0;
-		return this;
-	};
 	Coords.prototype.setTangent = function(){
 		var x = this.x;
 		this.x = this.y;
 		this.y = x;
 		return this;
 	};
+	Coords.prototype.getTangent = function(){
+		var x = this.y;
+		var y = this.x;
+		return new Coords(x, y);
+	};
+
 	Coords.prototype.getDistance = function(coord){
 		this.checkCoords(coord);
 		return Math.sqrt(
@@ -130,12 +137,17 @@
 		}
 		return new Coords(x, y);
 	};
+
+	Coords.prototype.setMagnitude = function(m) {
+		return this.set( this.getUnitVector().multiply(m) );
+	};
 	Coords.prototype.getMagnitude = function(){
 		return Math.sqrt(
 			Math.pow(this.x, 2)
 			+ Math.pow(this.y, 2)
 		);
 	};
+
 	Coords.prototype.isEqual = function(coord){
 		return (this.x == coord.x && this.y == coord.y);
 	};
