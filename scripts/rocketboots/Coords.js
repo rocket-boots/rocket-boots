@@ -137,9 +137,29 @@
 		}
 		return new Coords(x, y);
 	};
-
+	Coords.prototype.getUnitVectorTangent = function(coord){
+		this.checkCoords(coord);
+		var x = 0, y = 0;
+		var d = Math.abs(this.getDistance(coord));
+		if (d != 0) {
+			x = (coord.y - this.y) / d;
+			y = (this.x - coord.x) / d;
+		}
+		return new Coords(x, y);
+	};
+	Coords.prototype.normalize = function(){
+		var vectorLength = this.getMagnitude();
+		if (vectorLength == 0) {
+			this.x = 0;
+			this.y = 0;
+		} else {
+			this.x = this.x / vectorLength;
+			this.y = this.y / vectorLength;
+		}
+		return this;		
+	};
 	Coords.prototype.setMagnitude = function(m) {
-		return this.set( this.getUnitVector().multiply(m) );
+	 	return this.normalize().multiply(m);
 	};
 	Coords.prototype.getMagnitude = function(){
 		return Math.sqrt(
