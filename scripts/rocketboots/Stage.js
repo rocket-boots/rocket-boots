@@ -419,9 +419,10 @@
 						zIndices[ent.layerZIndex] = [];
 					}
 					zIndices[ent.layerZIndex].push(ent);
+				} else {
+					//console.log(ent);
+					o.drawEntity(ent);
 				}
-				//console.log(ent);
-				o.drawEntity(ent);
 			}
 			/*
 			entCount = ents.length;
