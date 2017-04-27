@@ -89,9 +89,11 @@
 	};
 	
 	// Put in / take out
+	// The "front" = the beginning of the array (0 index) and should be the last item drawn, 
+	// so it should also be the top of the image.
 	Entity.prototype.putIn = function(ent, groups, isFront){
 		if (typeof groups == "string") { groups = [groups]; }
-		if (typeof isFront != "boolean") { isFront = false; }
+		if (typeof isFront != "boolean") { isFront = true; }
 		var grp = "", t;
 		groups = groups.concat("all");
 		//console.log("Putting ", ent.name, " into ", groups);
@@ -116,7 +118,7 @@
 	};
 
 	Entity.prototype.putNewIn = function(options, groups, isFront, categorizeNow){
-		if (typeof isFront !== "boolean") { isFront = false; }
+		if (typeof isFront !== "boolean") { isFront = true; }
 		if (typeof groups !== "object") { groups = []; }
 		options.world = this;
 		var ent = new Entity(options);

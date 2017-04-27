@@ -396,7 +396,8 @@
 			entCount = 0,
 			ents = o._getEntitiesArray(),
 			ent = {},
-			i, j;
+			i, j, z,
+			zIndices = [];
 		
 		ctx.clearRect(0, 0, o.size.x, o.size.y);
 		// ctx.translate(0.5, 0.5); // TODO: Does this fix the half pixel issue?
@@ -407,11 +408,18 @@
 		//ctx.scale(2, 2);
 
 		// Loop over entities and draw them
-		entCount = ents.length;
+		i = ents.length;
 		//console.log("Stage: Drawing layer", this.name, "with", entCount, "entities.");
-		for (i = 0; i < entCount; i++){
+		while (i--) {
 			ent = ents[i];
 			if (ent !== null) {
+				// If the entity has a z-index, then keep track of it to draw later
+				if (ent.layerZIndex) {
+					if (!(zIndices[ent.layerZIndex] instanceof Array)) {
+						zIndices[ent.layerZIndex] = [];
+					}
+					zIndices[ent.layerZIndex].push(ent);
+				}
 				//console.log(ent);
 				o.drawEntity(ent);
 			}
@@ -423,6 +431,16 @@
 			}
 			*/
 		}
+		// Loop over z-indices to see if any entities need to be drawn after (on top)
+		for (z = 0; z < zIndices.length; z++) {
+			if (zIndices[z] instanceof Array) {
+				i = zIndices[z].length;
+				while (i--) {
+					o.drawEntity(zIndices[z][i]);
+				}
+			}
+		}
+
 
 		// Draw a grid
 		o.drawGrids();
