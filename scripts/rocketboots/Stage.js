@@ -451,10 +451,13 @@
 		};
 
 		// Note: The off-stage calculations don't take rotation into consideration
-		if (entStageCoordsOffset.x > layerSize.x || (entStageCoordsOffset.x + entStageSize.x) < 0) {
-			return false; // off stage (layer), right or left
-		} else if (entStageCoordsOffset.y > layerSize.y || (entStageCoordsOffset.y + entStageSize.y) < 0) {
-			return false; // off stage (layer), top or bottom
+		// TODO: ^ Fix this
+		if (!ent.drawOffstage) {
+			if (entStageCoordsOffset.x > layerSize.x || (entStageCoordsOffset.x + entStageSize.x) < 0) {
+				return false; // off stage (layer), right or left
+			} else if (entStageCoordsOffset.y > layerSize.y || (entStageCoordsOffset.y + entStageSize.y) < 0) {
+				return false; // off stage (layer), top or bottom
+			}
 		}
 
 		// ctx.layer = this; // TODO: Is this needed?
