@@ -17,7 +17,14 @@
 	Physics.prototype.apply = function(world){
 		var p = this;
 		// Loop over all movable entities
-		world.loopOverEntities("physics",function(entity1Index, ent1){	
+		world.loopOverEntities("physics", function physicsLoop (entity1Index, ent1){	
+			// Do gravity between objects
+			if (p.isObjectGravityOn) {
+				world.loopOverEntities("physics", function physicsGravityLoop (entity2Index, ent2){
+					p.applyGravityForce(ent1, ent2);
+				});
+			}
+			// Process all newtonian motions
 			if (ent1.isImmovable) {
 				ent1.vel.clear();
 			} else if (ent1.mass > 0) {
@@ -33,20 +40,15 @@
 			ent1.acc.clear();
 			ent1.force.clear();
 			ent1.impulse.clear();
-			// Do gravity between objects
-			if (p.isObjectGravityOn) {
-				world.loopOverEntities("physics", function(entity2Index, ent2){
-					p.applyGravityForce(ent1, ent2);
-				});
-			}
+			// Stop objects from flying out of the world
 			if (world.isBounded) {
 				world.keepCoordsInBounds(ent1.pos);
 			}
 		});			
 
 		if (p.isCollisionDetectionOn) {
-			world.loopOverEntities("physical", function(entity2Index, ent1){
-				world.loopOverEntities("physical", function(entity2Index, ent2){
+			world.loopOverEntities("physical", function collisionLoop1 (entity2Index, ent1){
+				world.loopOverEntities("physical", function collisionLoop2 (entity2Index, ent2){
 					var r = ent1.pos.getDistance(ent2.pos);
 					if (p.isCollisionDetectionOn) {
 						if (r == 0) {
@@ -108,10 +110,14 @@
 		var a1 = o1.vel.getDot(n);
 		var a2 = o2.vel.getDot(n);
 		var optimizedP = (2 * (a1 - a2)) / (o1.mass + o2.mass);
-		o1.vel.add( n.getMultiply(-1 * optimizedP * o2.mass) );
-		o1.vel.multiply(elasticity);
-		o2.vel.add( n.getMultiply(optimizedP * o1.mass) );
-		o1.vel.multiply(elasticity);
+		if (!o1.isImmovable) {
+			o1.vel.add( n.getMultiply(-1 * optimizedP * o2.mass) );
+			o1.vel.multiply(elasticity);
+		}
+		if (!o2.isImmovable) {
+			o2.vel.add( n.getMultiply(optimizedP * o1.mass) );
+			o2.vel.multiply(elasticity);
+		}
 		//var pNew = (o1.mass * o1.vel.getMagnitude()) + (o2.mass * o2.vel.getMagnitude());
 		//console.log(pNew - p);
 		//if (pNew > p) {
