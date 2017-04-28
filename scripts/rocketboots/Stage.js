@@ -86,7 +86,7 @@
 /// Draw and Resize
 
 	Stage.prototype.draw = function(forceAll){
-		if (typeof forceAll != "boolean") forceAll = false;
+		if (typeof forceAll != "boolean") { forceAll = false; }
 		this.camera.focus();
 		this.loopOverLayers(function drawLayer (layer, i){
 			if (layer.drawWithStage || forceAll) {
@@ -390,7 +390,12 @@
 		return this;
 	};
 
-	Stage.prototype.Layer.prototype.draw = function() {
+	Stage.prototype.Layer.prototype.clear = function() {
+		this.ctx.clearRect(0, 0, this.size.x, this.size.y);
+		return this;
+	};
+
+	Stage.prototype.Layer.prototype.draw = function(clearFirst) {
 		var o = this,
 			ctx = o.ctx,
 			entCount = 0,
@@ -398,8 +403,12 @@
 			ent = {},
 			i, j, z,
 			zIndices = [];
+		if (typeof clearFirst === 'undefined') { clearFirst = true; }
 		
-		ctx.clearRect(0, 0, o.size.x, o.size.y);
+		if (clearFirst) {
+			o.clear();
+		}
+		
 		// ctx.translate(0.5, 0.5); // TODO: Does this fix the half pixel issue?
 		ctx.save();
 		ctx.fillStyle = '#ffff66';
