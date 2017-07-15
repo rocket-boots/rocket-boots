@@ -10,6 +10,7 @@
 	var RANDOM = "random";
 	var PSEUDORANDOM = "pseudorandom";
 	component.Dice = function Dice(options) {
+		if (typeof options !== 'object') { options = {}; }
 		if (typeof options.seed == 'number') {
 			this.seed = options.seed;
 		} else {
