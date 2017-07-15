@@ -89,11 +89,14 @@
 	}
 
 	function setSeed(s) {
-		if (typeof s == "undefined") {
+		if (typeof s === "undefined") {
 			s = this.normalize(Math.random(), 10000);
+		} else if (typeof s === "number") {
+			this.seed = s;
+		} else {
+			console.error("Invalid seed");
 		}
-		this.seed = s;
-		return this.seed;
+		return this;
 	}
 
 	function getSeed() {
