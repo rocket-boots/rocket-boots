@@ -23,32 +23,33 @@
 	};
 
 	(function(p){
+		// True random
 		p.getRandom = Math.random; // always an alias for Math.random
+		// Pseudorandom based on sin curve
 		p.getPseudoRandomBySeed = getPseudoRandomBySeed;
 		p.getPseudoRandom = getPseudoRandom; // increments seed
-		//==== Basics: "random" function returns either a 
-		// true random number or a pseudorandom number based on
-		// the random-type that is set.
+		// "random" function returns either a true random number or a 
+		// pseudorandom number based on the `type` that is set.
 		p.random = Math.random; // can be changed
 		p.switchToPseudoRandom = switchToPseudoRandom; // changes .random
 		p.switchToRandom = switchToRandom; // changes .random
 		p.setSeed = setSeed;
 		p.getSeed = getSeed;
-		p.normalize = normalize;
+		p.normalize = normalize; // helper/internal function 
 		
-		//==== "Roll" functions
+		// Get-a-number functions
 		p.roll1d = roll1d;
 		p.rollxd = rollxd;
 		p.roll = roll;
-		p.flip = flip;
-		p.selectRandom = selectRandom;
-		p.pick = selectRandom; // alias - "pick from array"
-		
-		//==== "Get" functions -- Based on random-type
-		p.getRandomInteger = roll1d;
+		p.getRandomInteger = roll1d; // alias
 		p.getRandomIntegerBetween = getRandomIntegerBetween;	
 		p.getRandomAround = getRandomAround;
 		p.bell = getRandomAround; // alias
+
+		// Get something else
+		p.flip = flip; // 50% coin toss, get true/false or based on params
+		p.selectRandom = selectRandom; // pick random from array
+		p.pick = selectRandom; // alias
 	})(component.Dice.prototype)
 
 	// Install into RocketBoots if it exists
