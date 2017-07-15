@@ -4,58 +4,117 @@
 		classNames:		["Dice"],
 		requirements:	[],
 		description:	"Dice class for random number generation",
-		credits:		"By Luke Nickerson, 2014-2016"
+		credits:		"By Luke Nickerson, 2014-2017"
 	};
 
-	var Dice = component.Dice = function(){
-		this.randSeed = 1;
-		this.type = "random";
+	var RANDOM = "random";
+	var PSEUDORANDOM = "pseudorandom";
+	component.Dice = function Dice(options) {
+		if (typeof options.seed == 'number') {
+			this.seed = options.seed;
+		} else {
+			this.seed = 1;	
+		}
+		if (options.type === RANDOM || options.type === PSEUDORANDOM) {
+			this.type = options.type;
+		} else {
+			this.type = RANDOM;
+		}
+	};
+
+	(function(p){
+		p.getRandom = Math.random; // always an alias for Math.random
+		p.getPseudoRandomBySeed = getPseudoRandomBySeed;
+		p.getPseudoRandom = getPseudoRandom; // increments seed
+		//==== Basics: "random" function returns either a 
+		// true random number or a pseudorandom number based on
+		// the random-type that is set.
+		p.random = Math.random; // can be changed
+		p.switchToPseudoRandom = switchToPseudoRandom; // changes .random
+		p.switchToRandom = switchToRandom; // changes .random
+		p.setSeed = setSeed;
+		p.getSeed = getSeed;
+		p.normalize = normalize;
+		
+		//==== "Roll" functions
+		p.roll1d = roll1d;
+		p.rollxd = rollxd;
+		p.roll = roll;
+		p.flip = flip;
+		p.selectRandom = selectRandom;
+		p.pick = selectRandom; // alias - "pick from array"
+		
+		//==== "Get" functions -- Based on random-type
+		p.getRandomInteger = roll1d;
+		p.getRandomIntegerBetween = getRandomIntegerBetween;	
+		p.getRandomAround = getRandomAround;
+		p.bell = getRandomAround; // alias
+	})(component.Dice.prototype)
+
+	// Install into RocketBoots if it exists
+	if (typeof RocketBoots === "object") {
+		RocketBoots.installComponent(component);
+	} else { // Otherwise put the classes on the global window object
+		component.classNames.forEach(function(className){
+			window[className] = component[className];
+		});
 	}
-	// NOT based on random-type
-	Dice.prototype.getRandom = Math.random;
-	Dice.prototype.getPseudoRandomBySeed = function(seed){
+
+	return;
+
+	//// Hoisted functions
+
+	function getPseudoRandomBySeed(seed) {
 		// http://stackoverflow.com/a/19303725/1766230
 		var x = Math.sin(seed) * 10000;
 		return x - Math.floor(x);
-	};
-	Dice.prototype.getPseudoRandom = function(){
-		return this.getPseudoRandomBySeed(this.randSeed++);
-	};
-	
-	//==== Basics: "random" function returns either a 
-	// true random number or a pseudorandom number based on
-	// the random-type that is set.
-	Dice.prototype.random = Math.random;	
-	Dice.prototype.switchToPseudoRandom = function(){
-		this.type = "pseudorandom";
+	}
+
+	function getPseudoRandom() {
+		return this.getPseudoRandomBySeed(this.seed++);
+	}
+
+	function switchToPseudoRandom() {
+		this.type = PSEUDORANDOM;
 		this.random = this.getPseudoRandom;
+		return this;
 	}
-	Dice.prototype.switchToRandom = function(){
-		this.type = "random";
+
+	function switchToRandom() {
+		this.type = RANDOM;
 		this.random = Math.random;
+		return this;
 	}
-	Dice.prototype.setSeed = function(s){
+
+	function setSeed(s) {
 		if (typeof s == "undefined") {
-			s = this._normalize(Math.random(), 10000);
+			s = this.normalize(Math.random(), 10000);
 		}
-		this.randSeed = s;
+		this.seed = s;
+		return this.seed;
 	}
-	Dice.prototype._normalize = function(rand, n){
+
+	function getSeed() {
+		return this.seed;
+	}
+
+	function normalize(rand, n) {
 		return (Math.floor(rand * n) + 1);
 	}
-	
-	//==== "Roll" functions
-	Dice.prototype.roll1d = function (sides) {
-		return this._normalize(this.random(), sides);
+
+	function roll1d(sides) {
+		return this.normalize(this.random(), sides);
 	}
-	Dice.prototype.rollxd = function (num, sides) {
+
+	function rollxd(num, sides) {
 		var sum = 0;
 		for (var i = 0; i < num; i++){
 			sum += this.roll1d(sides);
 		}
 		return sum;
 	}
-	Dice.prototype.roll = function(){
+
+	function roll() {
 		if (arguments.length == 1) {
 			return this.roll1d(arguments[0]);
 		} else if (arguments.length == 2) {
@@ -65,40 +124,32 @@
 		} else {
 			console.error("Roll needs 1, 2, or 3 arguments");
 		}
-	};
-	Dice.prototype.flip = function(heads, tails){
+	}
+
+	function flip(heads, tails) {
 		if (typeof heads === 'undefined' && typeof tails === 'undefined') {
 			heads = true;
 			tails = false;
 		}
 		return (this.roll1d(2) == 1) ? heads : tails;
-	};
-	Dice.prototype.selectRandom = function(arr){
+	}
+
+	function selectRandom(arr) {
 		if (arr.length == 0 || arr.length === undefined) {
 			return null;
 		}
 		var r = Math.floor(this.random() * arr.length);
 		return arr[r];
 	}
-	
-	//==== "Get" functions -- Based on random-type
-	Dice.prototype.getRandomInteger = Dice.prototype.roll1d;
-	Dice.prototype.getRandomIntegerBetween = function (min, max) {
+
+	function getRandomIntegerBetween(min, max) {
 		return Math.floor(this.random() * (max - min + 1) + min);
-	}	
-	Dice.prototype.getRandomAround = function(n){ // BELL
+	}
+
+	function getRandomAround(n) { // BELL
 		var a = this.random();
 		var b = this.random();
 		return (n * (a-b));
 	}
 
-
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
-		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
-		}
-	}
 })();
