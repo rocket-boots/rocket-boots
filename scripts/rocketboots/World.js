@@ -28,13 +28,7 @@
 		this.grid = {
 			size : (new RocketBoots.Coords(1,1))
 		};
-		this.entityGroups = ["all", "physical", "movable", "physics"];
-		this.entities = { 
-			"all" : [],
-			"physical" : [],
-			"movable" : [],
-			"physics" : []
-		};
+		this.addEntityGroups(["all", "physical", "movable", "physics"]);
 		if (options.trackTime) {
 			this.day = 0;
 			this.time = 0;
