@@ -28,7 +28,8 @@
 	}
 	component.StateMachine = StateMachine;
 	StateMachine.prototype.get 			= getStateByName;
-	StateMachine.prototype.add 			= addState;
+	StateMachine.prototype.add 			= addState; // alias
+	StateMachine.prototype.addState		= addState;
 	StateMachine.prototype.addStates 	= addStates;
 	StateMachine.prototype.hasState		= hasState;
 	StateMachine.prototype.transition 	= transition;
