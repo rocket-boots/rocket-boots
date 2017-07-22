@@ -20,12 +20,39 @@
 	}
 	component.Game = Game;
 
-	//======================================================= Game Functions ======
+	Game.prototype.init = init;
+	Game.prototype.instantiateComponents = instantiateComponents;
+	Game.prototype.addComponent = addComponent;
+	Game.prototype._addDefaultStates = _addDefaultStates;
+	Game.prototype._addStages = _addStages;
 
-	Game.prototype.init = function(options){
+	// Install into RocketBoots if it exists
+	if (typeof RocketBoots === "object") {
+		RocketBoots.installComponent(component);
+	} else { // Otherwise put the classes on the global window object
+		component.classNames.forEach(function(className){
+			window[className] = component[className];
+		});
+	}
+
+	return;
+
+	//============================================ Hoisted Game Functions ======
+
+	function init(options){
 		//console.log("Initializing Game");
 		var g = this;
-
+		var defaultComponents = [{"state": "StateMachine"}];
+		var useDefaultComponents = true;
+		if (typeof options.defaultComponents !== "undefined") {
+			useDefaultComponents = options.defaultComponents ? true : false;
+			if (options.defaultComponents instanceof Array) {
+				defaultComponents = options.defaultComponents;	
+			}
+		}
+		if (useDefaultComponents) {
+			g.instantiateComponents(defaultComponents);
+		}
 		g._addDefaultComponents(options);
 		if (typeof options.instantiateComponents === "object") {
 			g.instantiateComponents(options.instantiateComponents);
@@ -37,11 +64,12 @@
 		return this;
 	}
 
-	// components should be an array of objects with one or two properties, like:
-	// {"loop": "Loop", "options": { ...etc... }}
+	// `components` should be an array of objects with one or two properties,
+	// like: {"loop": "Loop", "options": { ...etc... }}
 	// One property can be "options", while the other is a key-value pair for
 	// the component's new property name and the associated component class.
-	Game.prototype.instantiateComponents = function (components) {
+	function instantiateComponents(components) {
+		var g = this;
 		components.forEach(function(component){
 			var options = undefined;
 			var key;
@@ -53,40 +81,24 @@
 			for (key in component) {
 				compClass = component[key];
 				console.log("Instantiating component class", compClass, "as", key, "with options", options);
-				this._addComponent(key, compClass, options);
+				g.addComponent(key, compClass, options);
 			}
 		});
-		return this;
+		return g;
 	}
 
-	Game.prototype._addDefaultComponents = function(options){
-		this._addComponent("state", "StateMachine")	
-			//._addComponent("sounds", "SoundCannon")
-			//._addComponent("images", "ImageOverseer")
-			//._addComponent("state", "StateMachine")	
-			//._addComponent("looper", "Looper")
-			//._addComponent("timeCount", "TimeCount")
-			//._addComponent("incrementer", "Incrementer")
-			//._addComponent("dice", "Dice")
-			//._addComponent("keyboard", "Keyboard")
-			//._addComponent("physics", "Physics")
-			//._addComponent("entity", "Entity")
-			//._addComponent("world", "World", options.world);
-			// *** stage?
-		return this;
-	};
-
-	Game.prototype._addComponent = function(gameCompName, componentClass, arg){
+	function addComponent(gameCompName, componentClass, arg){
+		var g = this;
 		if (RocketBoots.hasComponent(componentClass)) {
 			//console.log("RB adding component", gameCompName, "to the game using class", componentClass, "and arguments:", arg);
-			this[gameCompName] = new RocketBoots[componentClass](arg);
+			g[gameCompName] = new RocketBoots[componentClass](arg);
 		} else {
 			console.warn(componentClass, "not found as a RocketBoots component");
 		}
-		return this;
-	};
+		return g;
+	}
 
-	Game.prototype._addDefaultStates = function () {
+	function _addDefaultStates() {
 		var g = this;
 		// Setup default states (mostly menu controls)
 		/*
@@ -127,9 +139,9 @@
 		//g.state.get("game").$view.show();
 
 		return g;
-	};
+	}
 
-	Game.prototype._addStages = function (options) {
+	function _addStages(options) {
 		var g = this;
 		var stageData;
 		if (typeof RocketBoots.Stage !== "function") {
@@ -156,14 +168,6 @@
 			g.stage = g.stages[0];
 		}
 		return g;
-	};
-
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
-		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
-		}
 	}
+
 })();
