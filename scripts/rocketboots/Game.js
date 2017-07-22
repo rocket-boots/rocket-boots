@@ -23,7 +23,7 @@
 	Game.prototype.init = init;
 	Game.prototype.instantiateComponents = instantiateComponents;
 	Game.prototype.addComponent = addComponent;
-	Game.prototype._addDefaultStates = _addDefaultStates;
+	Game.prototype._setupStates = _setupStates;
 	Game.prototype._addStages = _addStages;
 
 	// Install into RocketBoots if it exists
@@ -39,7 +39,7 @@
 
 	//============================================ Hoisted Game Functions ======
 
-	function init(options){
+	function init(options) {
 		//console.log("Initializing Game");
 		var g = this;
 		var defaultComponents = [{"state": "StateMachine"}];
@@ -53,14 +53,11 @@
 		if (useDefaultComponents) {
 			g.instantiateComponents(defaultComponents);
 		}
-		g._addDefaultComponents(options);
 		if (typeof options.instantiateComponents === "object") {
 			g.instantiateComponents(options.instantiateComponents);
 		}
 		g._addStages(options);
-		g._addDefaultStates();
-		g.state._setupTransitionLinks();
-		g.state.start("boot");
+		g._setupStates();
 		return this;
 	}
 
@@ -87,7 +84,7 @@
 		return g;
 	}
 
-	function addComponent(gameCompName, componentClass, arg){
+	function addComponent(gameCompName, componentClass, arg) {
 		var g = this;
 		if (RocketBoots.hasComponent(componentClass)) {
 			//console.log("RB adding component", gameCompName, "to the game using class", componentClass, "and arguments:", arg);
@@ -98,7 +95,8 @@
 		return g;
 	}
 
-	function _addDefaultStates() {
+	// TODO: Smart default configuration
+	function _setupStates() {
 		var g = this;
 		// Setup default states (mostly menu controls)
 		/*
@@ -138,9 +136,12 @@
 		
 		//g.state.get("game").$view.show();
 
+		g.state._setupTransitionLinks();
+		g.state.start("boot");
 		return g;
 	}
 
+	// TODO: Refactor this; remove jQuery dependency
 	function _addStages(options) {
 		var g = this;
 		var stageData;
