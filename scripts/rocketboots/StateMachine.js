@@ -30,6 +30,7 @@
 	StateMachine.prototype.get 			= getStateByName;
 	StateMachine.prototype.add 			= addState;
 	StateMachine.prototype.addStates 	= addStates;
+	StateMachine.prototype.hasState		= hasState;
 	StateMachine.prototype.transition 	= transition;
 	StateMachine.prototype.back 		= back;
 	StateMachine.prototype.start 		= start;
@@ -101,6 +102,10 @@
 			sm.add(stateOptions);
 		});
 		return sm;
+	}
+
+	function hasState(name) {
+		return (typeof this.states[name] === "undefined") ? false : true;
 	}
 
 	function transition(newState, recordHistory) {

@@ -107,10 +107,28 @@
 			//$('header, footer').hide();
 		}
 		*/
+		if (!g.state.hasState("boot")) {
+			g.state.addState({
+				name: "boot",
+				autoView: true
+			});
+		}
+		if (!g.state.hasState("preload")) {
+			g.state.addState({
+				name: "preload",
+				autoView: true
+			});
+		}
+		if (!g.state.hasState("game")) {
+			g.state.addState({
+				name: "game"
+			});
+		}
+
+		/*
 		g.state.addStates({
 			"boot": { 		autoView: true },
 			"preload": { 	autoView: true },
-			/*
 			"mainmenu": { 	autoView: true, start: startMenu, end: endMenu },
 			"new": { 		autoView: true, start: startMenu, end: endMenu },
 			"save": { 		autoView: true, start: startMenu, end: endMenu },
@@ -118,10 +136,10 @@
 			"help": { 		autoView: true, start: startMenu, end: endMenu },
 			"settings": { 	autoView: true, start: startMenu, end: endMenu },
 			"credits": { 	autoView: true, start: startMenu, end: endMenu },
-			"share": { 		autoView: true, start: startMenu, end: endMenu },
-			*/
+			"share": { 		autoView: true, start: startMenu, end: endMenu },	
 			"game": {}
 		});
+		*/
 		/*
 		g.state.add("game",{
 			start : function(){
