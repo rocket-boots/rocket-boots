@@ -40,10 +40,9 @@
 	Game.prototype.instantiateComponents = function (components) {
 		var i, key, compClass;
 		for (i = 0; i < components.length; i++) {
-			
 			for (key in components[i]) {
 				compClass = components[i][key];
-				//console.log("Instantiating component class", compClass, "as", key);
+				console.log("Instantiating component class", compClass, "as", key, components);
 				this._addComponent(key, compClass);
 			}
 		}

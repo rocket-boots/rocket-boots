@@ -5,8 +5,8 @@ var RocketBoots = {
 	components : {},
 	loadedScripts: [],
 	version: {
-		major: 0, minor: 10, patch: 0, 
-		codeName: "rover",
+		major: 0, minor: 11, patch: 0, 
+		codeName: "stars",
 		get full(){
 			return this.major.toString() + "." + this.minor.toString() +  "." + this.patch.toString();
 		}
