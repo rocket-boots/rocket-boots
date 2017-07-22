@@ -8,7 +8,7 @@
 	};
 
 	function Game (options) {
-		if (typeof options === 'string') {
+		if (typeof options === "string") {
 			options = {name: options};
 		} else {
 			options = options || {};
@@ -27,7 +27,7 @@
 		var g = this;
 
 		g._addDefaultComponents(options);
-		if (typeof options.instantiateComponents === 'object') {
+		if (typeof options.instantiateComponents === "object") {
 			g.instantiateComponents(options.instantiateComponents);
 		}
 		g._addStages(options);
@@ -37,15 +37,25 @@
 		return this;
 	}
 
+	// components should be an array of objects with one or two properties, like:
+	// {"loop": "Loop", "options": { ...etc... }}
+	// One property can be "options", while the other is a key-value pair for
+	// the component's new property name and the associated component class.
 	Game.prototype.instantiateComponents = function (components) {
-		var i, key, compClass;
-		for (i = 0; i < components.length; i++) {
-			for (key in components[i]) {
-				compClass = components[i][key];
-				console.log("Instantiating component class", compClass, "as", key, components);
-				this._addComponent(key, compClass);
+		components.forEach(function(component){
+			var options = undefined;
+			var key;
+			var compClass;
+			if (typeof component.options !== "undefined") {
+				options = component.options;
+				delete component.options;
 			}
-		}
+			for (key in component) {
+				compClass = component[key];
+				console.log("Instantiating component class", compClass, "as", key, "with options", options);
+				this._addComponent(key, compClass, options);
+			}
+		});
 		return this;
 	}
 
