@@ -64,6 +64,8 @@
 		if (this.mass === null) {
 			this.mass		= (this.size.x * this.size.y);
 		}
+		// Properly add entity groups (to ensure `entities` matches)
+		this.addEntityGroups(this.entityGroups);
 	};
 	component.Entity = Entity;
 

@@ -77,7 +77,7 @@
 			}
 			for (key in component) {
 				compClass = component[key];
-				console.log("Instantiating component class", compClass, "as", key, "with options", options);
+				//console.log("Instantiating component class", compClass, "as", key, "with options", options);
 				g.addComponent(key, compClass, options);
 			}
 		});
