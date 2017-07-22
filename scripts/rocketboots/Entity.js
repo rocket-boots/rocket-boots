@@ -4,7 +4,7 @@
 		classNames:		["Entity"],
 		requirements:	["Coords"],
 		description:	"Entity class",
-		credits:		"By Luke Nickerson, 2014-2016"
+		credits:		"By Luke Nickerson, 2014-2017"
 	};
 	//=========================================================================
 	//==== Entity

@@ -4,7 +4,7 @@
 		classNames:		["World"],
 		requirements:	["Entity", "Coords"], // Extended from Entity Class
 		description:	"",
-		credits:		"By Luke Nickerson, 2014, 2016"
+		credits:		"By Luke Nickerson, 2014, 2016, 2017"
 	};
 
 	//==== WORLD

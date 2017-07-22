@@ -4,7 +4,7 @@
 		classNames:		["Game"],
 		requirements:	[],
 		description:	"Game Class for RocketBoots",
-		credits:		"By Luke Nickerson, 2016"
+		credits:		"By Luke Nickerson, 2016, 2017"
 	};
 
 	function Game (options) {
