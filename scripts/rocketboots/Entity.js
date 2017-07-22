@@ -102,7 +102,10 @@
 		// Add entity to groups
 		for (t = 0; t < groups.length; t++){
 			grp = groups[t];
-			this.addEntityGroup(grp);
+			if (!this.hasEntityGroup(grp)) {
+				console.log("No entity group for", grp, ", so adding it.");
+				this.addEntityGroup(grp);
+			}
 			//console.log(ent);
 			if (!ent.isInGroup(grp)) {  // Is entity not in this group yet?
 				if (isFront) {
@@ -156,10 +159,22 @@
 		return this.entities[type];
 	};
 
+	Entity.prototype.hasEntityGroup = function(type) {
+		var typeId = this.entityGroups.indexOf(type);
+		if (typeId == -1) {
+			return false;
+		} else if (typeof this.entities[type] === "undefined") {
+			return false;
+		}
+		return true;
+	}
+
 	Entity.prototype.addEntityGroup = function(type){
 		var typeId = this.entityGroups.indexOf(type);
 		if (typeId == -1) {
 			typeId = (this.entityGroups.push(type) - 1);
+			this.entities[type] = [];
+		} else if (typeof this.entities[type] === "undefined") {
 			this.entities[type] = [];
 		}
 		return typeId;
