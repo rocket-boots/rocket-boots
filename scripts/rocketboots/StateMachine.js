@@ -1,13 +1,14 @@
 (function(){
 	var component = {
 		fileName: 		"StateMachine",
-		classNames:		["StateMachine"],
+		classNames:		["StateMachine", "State"],
 		requirements:	[],
 		description:	"State machine; requires jQuery ($)",
-		credits:		"By Luke Nickerson, 2014"
+		credits:		"By Luke Nickerson, 2014, 2017"
 	};
 
-	var StateMachine = component.StateMachine = function(){
+	function StateMachine(options) {
+		if (typeof options !== 'object') { options = {}; }
 		this.states = {};
 		this.currentState = null;
 		this.history = [];
@@ -21,10 +22,55 @@
 			get: function(){ return this.currentState; }, 
 			set: function(x){ this.currentState = x; } 
 		});
+		if (options.states) {
+			this.addStates(options.states);
+		}
+	}
+	component.StateMachine = StateMachine;
+	StateMachine.prototype.get 			= getStateByName;
+	StateMachine.prototype.add 			= addState;
+	StateMachine.prototype.addStates 	= addStates;
+	StateMachine.prototype.transition 	= transition;
+	StateMachine.prototype.back 		= back;
+	StateMachine.prototype.start 		= start;
+	StateMachine.prototype._getStateFromElement 	= _getStateFromElement;
+	StateMachine.prototype._setupTransitionLinks 	= _setupTransitionLinks;
+	
+	function State(name, options) {
+		this.name	= name;
+		this.viewName = options.viewName || name;
+		this.$view	= $('.state.'+ this.viewName);
+		this.start 	= null;
+		this.end 	= null;
+		this.update	= null;
+		this.type 	= options.type || null;
+		this.autoView = options.autoView || true;
+		// Init
+		this.setStart(options.start);
+		this.setEnd(options.end);
+		this.setUpdate(options.update);
+	}
+	component.State = State;
+	State.prototype.setStart 	= setStart;
+	State.prototype.setEnd 		= setEnd;
+	State.prototype.setUpdate 	= setUpdate;
+	State.prototype.getType 	= getType;
+
+	// Install into RocketBoots if it exists
+	if (typeof RocketBoots === "object") {
+		RocketBoots.installComponent(component);
+	} else { // Otherwise put the classes on the global window object
+		component.classNames.forEach(function(className){
+			window[className] = component[className];
+		});
 	}
 
+	return;
+
+	//================ Hoisted functions for StateMachine class ================
+
 	// Getters
-	StateMachine.prototype.get = function(name){
+	function getStateByName(name) {
 		if (typeof name == "undefined") {
 			return this.currentState;
 		} else if (typeof this.states[name] == "undefined") {
@@ -34,7 +80,8 @@
 			return this.states[name];
 		}
 	}
-	StateMachine.prototype.add = function(options){
+
+	function addState(options){
 		var name;
 		if (typeof options === "string") {
 			name = options;
@@ -44,16 +91,18 @@
 		}
 		this.states[name] = new this.State(name, options);
 		return this;
-	};
-	StateMachine.prototype.addStates = function (obj) {
+	}
+
+	function addStates(obj) {
 		var sm = this;
 		$.each(obj, function(stateName, stateOptions){
 			stateOptions.name = stateName;
 			sm.add(stateOptions);
 		});
 		return sm;
-	};
-	StateMachine.prototype.transition = function(newState, recordHistory){
+	}
+
+	function transition(newState, recordHistory) {
 		var oldStateName = this.currentState.name;
 		recordHistory = (typeof recordHistory === 'boolean') ? recordHistory : true;
 		console.log("State Machine: Transition from " + oldStateName + " to " + newState, (recordHistory ? "": "(no history)"));
@@ -70,24 +119,25 @@
 			.addClass(this._mainElementClassPrefix + newState + this._mainElementClassSuffix);
 		this.currentState.start();
 		return this;
-	};
-	StateMachine.prototype.back = function() {
+	}
+
+	function back() {
 		if (this.history.length >= 2) {
 			this.history.pop();
 			var end = this.history.length - 1;
 			this.transition(this.history[end], false);
 		}
 		return this;
-	};
-	StateMachine.prototype.start = function(stateName){
+	}
+
+	function start(stateName) {
 		$('.state').hide();
 		this.currentState = this.get(stateName);
 		this.currentState.start();
 		return this;
 	}
-	//sm.prototype.init();
 
-	StateMachine.prototype._getStateFromElement = function (elt) {
+	function _getStateFromElement(elt) {
 		var $elt = $(elt);
 		var stateName = $elt.data("state");
 		if (typeof stateName === 'undefined') {
@@ -98,7 +148,8 @@
 		}
 		return stateName;
 	}
-	StateMachine.prototype._setupTransitionLinks = function () {
+
+	function _setupTransitionLinks() {
 		var sm = this;
 		// Setup state transition clicks
 		$('.goto, .goto-state').click(function(e){
@@ -120,64 +171,46 @@
 			}
 		});
 		return sm;
-	};
-
-
-	//==== State Class
-	StateMachine.prototype.State = function(name, settings){
-		this.name	= name;
-		this.viewName = settings.viewName || name;
-		this.$view	= $('.state.'+ this.viewName);
-		this.start 	= null;
-		this.end 	= null;
-		this.update	= null;
-		this.type 	= settings.type || null;
-		this.autoView = settings.autoView || true;
-		// Init
-		this.setStart(settings.start);
-		this.setEnd(settings.end);
-		this.setUpdate(settings.update);
 	}
+
+
+	//================ Hoisted functions for State class =======================
 	// Setters
-	StateMachine.prototype.State.prototype.setStart = function(fn){
+	function setStart(fn) {
 		var s = this;
 		this.start = function () {
-			if (typeof fn == "function") fn.apply(s); // TODO: use call or apply?
+			if (typeof fn == "function") {
+				fn.apply(s); // TODO: use call or apply?
+			}
 			if (s.autoView) {
 				s.$view.show(); 
 			}
 		};
 		return s;
 	}
-	StateMachine.prototype.State.prototype.setEnd = function(fn){
+
+	function setEnd(fn) {
 		var s = this;
 		this.end = function () {
-			if (typeof fn == "function") fn.apply(s); // TODO: use call or apply?
+			if (typeof fn == "function") {
+				fn.apply(s); // TODO: use call or apply?
+			}
 			if (s.autoView) {
 				s.$view.hide(); 
 			}
 		};
 		return s;		
 	}
-	StateMachine.prototype.State.prototype.setUpdate = function(fn){
+
+	function setUpdate(fn) {
 		if (typeof fn == "function") this.update = fn;
 		else this.update = function(){	};
 		return this;
 	}
+
 	// Getters
-	StateMachine.prototype.State.prototype.getType = function(){
+	function getType() {
 		return this.type;
 	}
-	
-	
-	
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
-		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
-		}
-	}
 })();
