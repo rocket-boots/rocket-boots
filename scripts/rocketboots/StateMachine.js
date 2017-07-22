@@ -35,6 +35,7 @@
 	StateMachine.prototype.start 		= start;
 	StateMachine.prototype._getStateFromElement 	= _getStateFromElement;
 	StateMachine.prototype._setupTransitionLinks 	= _setupTransitionLinks;
+	StateMachine.prototype.State = State;
 	
 	function State(name, options) {
 		this.name	= name;
