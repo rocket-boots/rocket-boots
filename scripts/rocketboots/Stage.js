@@ -1,7 +1,7 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"Stage",
-		classNames:		["Stage"],
+		classes:		{"Stage": Stage},
 		requirements:	["Coords"], // Works with the Entity component
 		description:	"",
 		credits:		"By Luke Nickerson, 2014, 2016"
@@ -11,7 +11,6 @@
 		options = options || {};
 		this.init(options);
 	}
-	component.Stage = Stage;
 
 /// Initialize Stage
 
@@ -665,12 +664,12 @@
 
 
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

@@ -1,50 +1,50 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"SoundBank",
-		classNames:		["SoundBank"],
+		classes:		{"SoundBank": SoundBank},
 		requirements:	[],
 		description:	"Sound loader/player; formerly SoundCannon",
 		credits:		"By Luke Nickerson, 2014-2017"
 	};
 	
-	var sc = component.SoundBank = function() {
+	function SoundBank() {
 		this.sounds = {};
 		this.isSoundOn = true;
 		this.isMusicOn = true;
 		this.soundHook = function(){}; 
 		this.musicHook = function(){};
 	};
-	sc.prototype._set = function(bool){
+	SoundBank.prototype._set = function(bool){
 		if (!bool) this._setMusic(false);
 		this.isSoundOn = bool;
 		this.soundHook(bool);
 	};
-	sc.prototype._setMusic = function(bool){
+	SoundBank.prototype._setMusic = function(bool){
 		if (bool) this._set(true);
 		this.isMusicOn = bool;
 		this.musicHook(bool);
 	};
-	sc.prototype.on = function() {
+	SoundBank.prototype.on = function() {
 		this._set(true);
 		return this;
 	};
-	sc.prototype.off = function() {
+	SoundBank.prototype.off = function() {
 		this._set(false);
 		return this;
 	};
-	sc.prototype.soundOn = sc.prototype.on; // alias
-	sc.prototype.soundOff = sc.prototype.off; // alias
+	SoundBank.prototype.soundOn = SoundBank.prototype.on; // alias
+	SoundBank.prototype.soundOff = SoundBank.prototype.off; // alias
 
-	sc.prototype.musicOn = function() {
+	SoundBank.prototype.musicOn = function() {
 		this._setMusic(true);
 		return this;
 	};
-	sc.prototype.musicOff = function() {
+	SoundBank.prototype.musicOff = function() {
 		this._setMusic(false);
 		return this;
 	};
 
-	sc.prototype.toggle = function (forceSound) {
+	SoundBank.prototype.toggle = function (forceSound) {
 		if (typeof forceSound === 'boolean') { 	
 			this._set(forceSound);
 		} else {
@@ -52,9 +52,9 @@
 		}
 		return this.isSoundOn;	
 	};
-	sc.prototype.toggleSound = sc.prototype.toggle; // alias
+	SoundBank.prototype.toggleSound = SoundBank.prototype.toggle; // alias
 
-	sc.prototype.toggleMusic = function (forceMusic) {
+	SoundBank.prototype.toggleMusic = function (forceMusic) {
 		if (typeof forceMusic === 'boolean') { 	
 			this._setMusic(forceMusic);
 		} else {
@@ -63,7 +63,7 @@
 		return this.isMusicOn;	
 	};
 
-	sc.prototype.loadSounds = function(soundNameArray, directory, extension) {
+	SoundBank.prototype.loadSounds = function(soundNameArray, directory, extension) {
 		if (typeof directory != "string") directory = "sounds/";
 		if (typeof extension != "string") extension = "mp3";
 		var sn, snL = soundNameArray.length;
@@ -76,7 +76,7 @@
 		console.log("Loaded", snL, "sounds.");
 	};
 
-	sc.prototype.play = function (soundName, isLooped) {
+	SoundBank.prototype.play = function (soundName, isLooped) {
 		if (this.isSoundOn) {	
 			if (typeof this.sounds[soundName] === 'undefined') {
 				console.log("Sound does not exist: " + soundName);
@@ -96,7 +96,7 @@
 		}
 	}
 	
-	sc.prototype.stop = function(soundName){
+	SoundBank.prototype.stop = function(soundName){
 		if (this.sounds[soundName]) {
 			this.sounds[soundName].pause();
 		} else {
@@ -105,12 +105,12 @@
 	};
 
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

@@ -1,7 +1,7 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"Storage",
-		classNames:		["Storage"],
+		classes:		{"Storage": Storage},
 		requirements:	[],
 		description:	"Wrapper for localStorage",
 		credits:		"By Luke Nickerson, 2017"
@@ -18,7 +18,6 @@
 
 		_.extend(this, options);
 	};
-	component.Storage = Storage;
 
 	Storage.prototype.save = function (data) {
 		for (var key in data) {
@@ -75,12 +74,12 @@
 		return this._storage.removeItem(this.prefix + key);
 	};
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

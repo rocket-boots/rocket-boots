@@ -1,13 +1,6 @@
 (function(){
-	var component = {
-		fileName: 		"Currency", 
-		classNames:		["Currency"],
-		requirements:	[],
-		description:	"Currency class, useful for incremental games",
-		credits:		"previously part of incrementer; by Luke Nickerson 2015-2016"
-	};
 
-	var Currency = component.Currency = function Currency (options){
+	function Currency(options) {
 		options 			= options || {};
 		this.name 			= (options.name || options.elementId || "Currency_" + Math.round(Math.random() * 9999999));
 		this.displayName 	= (options.displayName || this.name);
@@ -335,12 +328,20 @@
 	Currency.prototype.incrementByElapsedTime = Currency.prototype._incrementByElapsedTime;
 
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots == "object") {
+	const component = {
+		fileName: 		"Currency", 
+		classes:		{"Currency": Currency},
+		requirements:	[],
+		description:	"Currency class, useful for incremental games",
+		credits:		"previously part of incrementer; by Luke Nickerson 2015-2016"
+	};
+
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

@@ -1,13 +1,13 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"ImageBank",
-		classNames:		["ImageBank"],
+		classes:		{"ImageBank": ImageBank},
 		requirements:	[],
 		description:	"image loading; formerly known as Image Overseer",
 		credits:		"By Luke Nickerson, 2014, 2017"
 	};
 	
-	var ImageBank = component.ImageBank = function () {
+	function ImageBank() {
 		this.images = {};
 		this.path = "images/";
 	};
@@ -51,12 +51,12 @@
 		return o.images;
 	};
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

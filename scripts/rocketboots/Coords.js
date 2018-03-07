@@ -1,12 +1,5 @@
 (function(){
-	var component = {
-		fileName: 		"Coords",
-		classNames:		["Coords"],
-		requirements:	[],
-		description:	"2D Coordinates", // Originally created for stardust.js
-		credits:		"By Luke Nickerson, 2014, 2017"
-	};
-	
+
 	function Coords (x,y) {
 		if (typeof x === 'object') {
 			y = x.y;
@@ -194,12 +187,20 @@
 		return this;
 	};
 	
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots == "object") {
+
+	const component = {
+		fileName: 		"Coords",
+		classes:		{"Coords": Coords},
+		description:	"2D Coordinates", // Originally created for stardust.js
+		credits:		"By Luke Nickerson, 2014, 2017"
+	};
+
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

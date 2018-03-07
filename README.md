@@ -17,7 +17,7 @@ At the root you'll find:
 
 * `scripts` directory
   * `libs` directory - contains various open source libraries that RocketBoots might use
-    * jquery, lodash, etc.
+    * jquery, lodash, pixi, etc.
   * `rocketboots` directory - contains the RocketBoots code
     * `core.js` - the core functionality that RocketBoots needs
     * [*various components*](docs/component-list.md) (`.js`) - these can be pulled in individually as needed

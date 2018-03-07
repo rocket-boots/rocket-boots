@@ -1,7 +1,7 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"StateMachine",
-		classNames:		["StateMachine", "State"],
+		classes:		{"StateMachine": StateMachine, "State": State},
 		requirements:	[],
 		description:	"State machine; requires jQuery ($)",
 		credits:		"By Luke Nickerson, 2014, 2017"
@@ -59,13 +59,13 @@
 	State.prototype.setUpdate 	= setUpdate;
 	State.prototype.getType 	= getType;
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		component.classNames.forEach(function(className){
-			window[className] = component[className];
-		});
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
+		}
 	}
 
 	return;

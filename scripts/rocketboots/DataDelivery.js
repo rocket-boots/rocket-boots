@@ -1,11 +1,4 @@
 (function(){
-	var component = {
-		fileName: 		"DataDelivery",
-		classNames:		["DataDelivery"],
-		requirements:	[],
-		description:	"DataDelivery Class, requires jquery ($)",
-		credits:		"By Luke Nickerson, 2014-2015"
-	};
 
 	// Requirements
 	if (!window.jQuery) { 
@@ -13,7 +6,7 @@
 	}
 	
 	// Create object
-	var dd = component.DataDelivery = function (dataVarName) {
+	function dd(dataVarName) {
 		this.dataVarName = dataVarName;
 	}
 
@@ -48,12 +41,20 @@
 		});
 	}
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	const component = {
+		fileName: 		"DataDelivery",
+		classes:		{"DataDelivery": dd},
+		requirements:	[],
+		description:	"DataDelivery Class, requires jquery ($)",
+		credits:		"By Luke Nickerson, 2014-2015"
+	};
+
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();

@@ -5,7 +5,7 @@ var RocketBoots = {
 	components : {},
 	loadedScripts: [],
 	version: {
-		major: 0, minor: 11, patch: 0, 
+		major: 0, minor: 12, patch: 0, 
 		codeName: "stars",
 		get full(){
 			return this.major.toString() + "." + this.minor.toString() +  "." + this.patch.toString();
@@ -24,20 +24,23 @@ var RocketBoots = {
 	
 //==== Classes
 
-	Component : function(c){
+	Component: function(c){
 		this.fileName = c;
 		this.name = null;
+		this.classes = {};
+		this.description = null;
+		this.credits = null;
 		this.isLoaded = false;
 		this.isInstalled = false;	
 	},
 	
 //==== General Functions
-	log : console.log,
+	log: console.log,
 	useGitHubScripts: function(){
 		this.scriptsPath = "https://rocket-boots.github.io/rocket-boots/scripts/";
 		return this;
 	},
-	loadScript : function(url, callback){
+	loadScript: function(url, callback){
 		//console.log("Loading script", url);
 		// http://stackoverflow.com/a/7719185/1766230
 		var o = this;
@@ -66,19 +69,24 @@ var RocketBoots = {
 //==== Component Functions
 
 	hasComponent: function (componentClass) {
-		if (typeof RocketBoots[componentClass] == "function") {
-			return true;
-		} else {
-			return false;
-		}
+		return Boolean(typeof RocketBoots[componentClass] === "function");
 	},
-	installComponent : function (options, callback, attempt) {
-		// options = { fileName, classNames, requirements, description, credits }
-		var o = this;
-		var mainClassName = (typeof options.classNames === 'object' && options.classNames.length > 0) ? options.classNames[0] : (options.classNames || options.className);
-		var componentClass = options[mainClassName];
-		var requirements = options.requirements;
-		var fileName = options.fileName;
+
+	installComponent: function (options, callback, attempt) {
+		options = options || {}; // { fileName, classes, requirements, description, credits }
+		const classNames = options.classNames || [];
+		const classes = options.classes;
+		if (classes) {
+			for (let className in classes) {
+				classNames.push(className);
+			}
+		}
+		const description = options.description || null;
+		const credits = options.credits || null;
+		const mainClassName = classNames[0];
+		const mainComponentClass = options.classes[mainClassName];
+		const requirements = options.requirements;
+		const fileName = options.fileName || mainClassName;
 		var callbacks = [];
 		var i;
 		// Setup array of callbacks
@@ -90,40 +98,43 @@ var RocketBoots = {
 			console.error("Error installing component: mainClassName is not a string", mainClassName, options);
 			console.log("options", options);
 			return;
-		} else if (typeof componentClass !== 'function') {
+		} else if (typeof mainComponentClass !== 'function') {
 			console.error("Error installing component: class name", mainClassName, "not found on options:", options);
 			console.log("options", options);
 			return;
 		}
+		if (!fileName) {
+			console.error("No fileName for component.");
+		}
 		
 		//console.log("Installing", fileName, " ...Are required components", requirements, " loaded?", o.areComponentsLoaded(requirements));
-		if (!o.areComponentsLoaded(requirements)) {
+		if (!this.areComponentsLoaded(requirements)) {
 			var tryAgainDelay, compTimer;
 
 			if (typeof attempt === "undefined") { 
 				attempt = 1; 
-			} else if (attempt > o._MAX_ATTEMPTS) {
+			} else if (attempt > this._MAX_ATTEMPTS) {
 				console.error("Could not initialize RocketBoots: too many attempts");
 				return false;
 			} else {
 				attempt++;
 			}
 
-			if (o._autoLoadRequirements) {
+			if (this._autoLoadRequirements) {
 				console.log(fileName, "requires component(s)", requirements, " which aren't loaded. Autoloading...");
-				o.loadComponents(requirements);
+				this.loadComponents(requirements);
 				tryAgainDelay = 100 * attempt;
 			} else {
 				console.warn(fileName, "requires component(s)", requirements, " which aren't loaded.");
 				tryAgainDelay = 5000;
 			}
-			compTimer = window.setTimeout(function(){ 
-				o.installComponent(options, callback, attempt);
+			compTimer = window.setTimeout(() => {
+				this.installComponent(options, callback, attempt);
 			}, tryAgainDelay);
 
 		} else {
-			if (typeof o.components[fileName] == "undefined") {
-				o.components[fileName] = new o.Component(fileName);
+			if (this.components[fileName] === undefined) {
+				this.components[fileName] = new this.Component(fileName);
 			}
 			/*
 			for (i = 0; i < callbacks.length; i++) {
@@ -132,13 +143,15 @@ var RocketBoots = {
 				}
 			}
 			*/
-			o.components[fileName].name = mainClassName;
-			o.components[fileName].isInstalled = true;
-			o.components[fileName].callbacks = callbacks;
-			// TODO: Add description and credits
-			//o.components[fileName].description = "";
-			//o.components[fileName].credits = "";
-			o[mainClassName] = componentClass;
+			this.components[fileName].name = mainClassName;
+			this.components[fileName].isInstalled = true;
+			this.components[fileName].callbacks = callbacks;
+			this.components[fileName].classes = classes;
+			this.components[fileName].description = description;
+			this.components[fileName].credits = credits;
+			for (let className in classes) {
+				this[className] = classes[className];
+			}
 		}
 		return this;
 	},
@@ -202,7 +215,7 @@ var RocketBoots = {
 
 //==== Ready and Init Functions
 
-	ready : function(callback){
+	ready: function(callback){
 		if (typeof callback == "function") {
 			if (this.isInitialized) {
 				callback(this);
@@ -214,7 +227,7 @@ var RocketBoots = {
 		}
 		return this;
 	},
-	runReadyFunctions : function(){
+	runReadyFunctions: function(){
 		var o = this;
 		// Loop over readyFunctions and run each one
 		var f, fn;
@@ -225,7 +238,7 @@ var RocketBoots = {
 		}
 		return this;	
 	},
-	init : function(attempt){
+	init: function(attempt){
 		var o = this;
 		// TODO: allow dependecies to be injected rather than forcing them to be on the window scope
 		var isJQueryUndefined = (typeof $ === "undefined");

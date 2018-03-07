@@ -1,13 +1,13 @@
 (function(){
 	var component = {
 		fileName: 		"Tabs",
-		classNames:		["Tabs"],
+		classes:		{"Tabs": Tabs},
 		requirements:	[], 
 		description:	"",
 		credits:		"By Luke Nickerson, 2016-2017"
 	};
 
-	var Tabs = component.Tabs = function TabsClass (options){
+	function Tabs (options){
 		this.setOptions(options);
 	};
 
@@ -153,12 +153,12 @@
 
 
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 

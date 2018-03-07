@@ -1,7 +1,7 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"Dice",
-		classNames:		["Dice"],
+		classes:		{"Dice": Dice},
 		requirements:	[],
 		description:	"Dice class for random number generation",
 		credits:		"By Luke Nickerson, 2014-2017"
@@ -9,7 +9,7 @@
 
 	var RANDOM = "random";
 	var PSEUDORANDOM = "pseudorandom";
-	component.Dice = function Dice(options) {
+	function Dice(options) {
 		if (typeof options !== 'object') { options = {}; }
 		if (typeof options.seed == 'number') {
 			this.seed = options.seed;
@@ -53,13 +53,13 @@
 		p.pick = selectRandom; // alias
 	})(component.Dice.prototype)
 
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		component.classNames.forEach(function(className){
-			window[className] = component[className];
-		});
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
+		}
 	}
 
 	return;

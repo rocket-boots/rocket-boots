@@ -1,13 +1,13 @@
 (function(){
-	var component = {
+	const component = {
 		fileName: 		"Keyboard",
-		classNames:		["Keyboard"],
+		classes:		{"Keyboard": Keyboard},
 		requirements:	[],
 		description:	"Component to make keyboard events easier to setup; still needs work.",
 		version: 		"beta-3",
 		credits:		"By Luke Nickerson, 2016, 2017"
 	};
-	component.Keyboard = Keyboard;
+
 	function Keyboard (){
 		this.keyDownActions = {};
 		this.keyPressActions = {}; // TODO: press disabled for now; see TODO notes below
@@ -233,12 +233,12 @@
 	Keyboard.prototype.stop = Keyboard.prototype.clear;
 
 	
-	// Install into RocketBoots if it exists
-	if (typeof RocketBoots === "object") {
+	// Install into RocketBoots if it exists otherwise put the classes on the global window object
+	if (RocketBoots) {
 		RocketBoots.installComponent(component);
-	} else { // Otherwise put the classes on the global window object
-		for (var i = 0; i < component.classNames.length; i++) {
-			window[component.classNames[i]] = component[component.classNames[i]];
+	} else if (window) {
+		for (let className in component.classes) {
+			window[className] = component.classes[className];
 		}
 	}
 })();
