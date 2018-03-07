@@ -7,7 +7,7 @@
 		credits:		"By Luke Nickerson, 2014-2016"
 	};
 
-	var Loop = component.Loop = function(fn, delay){
+	function Loop(fn, delay) {
 		this.set(fn, delay);
 		this.isLooping 	= false;
 		this.timer 		= 0;
