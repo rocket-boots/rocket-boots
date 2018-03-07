@@ -51,7 +51,7 @@
 		p.flip = flip; // 50% coin toss, get true/false or based on params
 		p.selectRandom = selectRandom; // pick random from array
 		p.pick = selectRandom; // alias
-	})(component.Dice.prototype)
+	})(Dice.prototype)
 
 	// Install into RocketBoots if it exists otherwise put the classes on the global window object
 	if (RocketBoots) {
