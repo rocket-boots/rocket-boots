@@ -98,8 +98,8 @@ var RocketBoots = {
 			console.error("Error installing component: mainClassName is not a string", mainClassName, options);
 			console.log("options", options);
 			return;
-		} else if (typeof mainComponentClass !== 'function') {
-			console.error("Error installing component: class name", mainClassName, "not found on options:", options);
+		} else if (!mainComponentClass) {
+			console.error("Error installing component: mainComponentClass", mainClassName, "not found", options);
 			console.log("options", options);
 			return;
 		}

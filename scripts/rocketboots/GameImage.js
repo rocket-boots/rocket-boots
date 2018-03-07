@@ -1,10 +1,13 @@
 (function(){
 	class GameImage extends Image {
-		constructor(n, src) { 
+		constructor(options) { 
 			super();
-			if (typeof n === "string") {
-				this.src = "images/" + n + ".png";
+			options = options || {};
+			const name = options.name || options;
+			if (typeof name === "string") {
+				this.src = "images/" + name + ".png";
 			}
+			const src = options.src || options.url || null;
 			if (typeof src === "string") {
 				this.src = src;
 			}
@@ -16,15 +19,24 @@
 				this.src = c._canvas.toDataURL();
 			*/
 			this.flippedHorizontal = null;
-			this.flippedVertical = null;		
+			this.flippedVertical = null;
+			this.pixiTexture = null;
+			this.pixiSprite = null;		
 			this.outline = new Image();
-			this.onload = () => { this.setup(); }
+			this.isLoaded = false;
+			this.onload = () => { 
+				this.setup();
+				this.isLoaded = true;
+			}
 		}
 		setup() {
 			this.data = this.getImageData();
 			this.flippedHorizontal = this.getFlippedImage(-1, 1);
 			this.flippedVertical = this.getFlippedImage(1, -1);
 			this.setOutline();
+			if (PIXI) {
+				this.setPixiProperties();
+			}
 		}
 		getImageData() {
 			let c = this.getCanvasContext();
@@ -69,7 +81,7 @@
 	const component = {
 		fileName: "GameImage",
 		classes: {"GameImage": GameImage},
-		requirements: [],
+		requirements: ["Pixi"],
 		description: "GameImage class",
 		credits: "By Luke Nickerson, 2017-2018"
 	};

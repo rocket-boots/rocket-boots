@@ -1,27 +1,59 @@
 (function(){
+	// NOTE: This spritesheet loader only handles sheets with static sized sprites
 	class Spritesheet {
-		constructor(n, cb) {
-			this.sheet = new RocketBoots.GameImage(n);
-			this.sprites = [];
-			this.sheet.onload = () => { 
-				this.parse();
-				if (typeof cb === "function") { cb(this.sprites); }
-			};
+		constructor(options) {
+			options = options || {};
+			const gameImageOptions = (options.url) ? {url: options.url} : {name: options.name};
+			this.sheet = new RocketBoots.GameImage(gameImageOptions);
+			this.spriteSize = options.spriteSize || {x: 16, y: 16};
+			this.spriteKeys = options.spriteKeys || [[]];
+			this.spriteList = [];
+			this.sprites = {};
+			this.loadPromise = new Promise((resolve, reject) => {
+				this.sheet.onload = () => {
+					this.parse();
+					resolve(this);
+				};
+			});
 		}
 		parse() {
-			let canvas = document.createElement('canvas');
-			let w = this.sheet.height;
-			canvas.width = w;
-			canvas.height = w; // assumes square
+			const canvas = document.createElement('canvas');
+			let w = this.spriteSize.x;
+			let h = this.spriteSize.y;
 			let c = canvas.getContext('2d');
 			let x = 0;
-			while (this.sprites.length) { this.sprites.pop(); }
-			while (x < this.sheet.width) {
-				c.clearRect(0, 0, w, w);
-				c.drawImage(this.sheet, x, 0, w, w, 0, 0, w, w);
-				x += w;
-				let src = canvas.toDataURL();
-				this.sprites.push(new RocketBoots.GameImage(null, src));
+			let y = 0;
+			let kx = 0;
+			let ky = 0;
+			canvas.width = w;
+			canvas.height = h;
+			this.spriteList.length = 0; //while (this.spriteList.length) { this.spriteList.pop(); }
+			while (y < this.sheet.height) {
+				let row = this.spriteKeys[ky];
+				kx = 0;
+				x = 0;
+				console.log("Row ---", y, this.sheet.height, row, x, this.sheet.width);
+				if (row !== undefined) {
+					while (x < this.sheet.width) {
+						let key = row[kx];
+						if (key !== undefined) {
+							c.clearRect(0, 0, canvas.width, canvas.height);
+							c.drawImage(this.sheet, x, y, w, h, 0, 0, w, h);
+							const src = canvas.toDataURL();
+							const spriteImage = new RocketBoots.GameImage({src: src});
+							if (!(spriteImage instanceof RocketBoots.GameImage)) {
+								console.warn("!");
+							}
+							this.spriteList.push(spriteImage);
+							this.sprites[key] = spriteImage;
+						}
+						console.log(key, x, y, kx, ky);
+						x += w;
+						kx++;
+					}
+				}
+				y += h;
+				ky++;
 			}
 		}
 	}
