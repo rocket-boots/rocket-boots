@@ -11,6 +11,7 @@
 			if (typeof src === "string") {
 				this.src = src;
 			}
+			this.name = options.name || null;
 			this.data = null;
 			/*
 				console.log(n);
@@ -24,17 +25,22 @@
 			this.pixiSprite = null;		
 			this.outline = new Image();
 			this.isLoaded = false;
-			this.onload = () => { 
-				this.setup();
-				this.isLoaded = true;
-			}
+			// Setup now and after loaded
+			this.loadPromise = new Promise((resolve, reject) => {
+				this.onload = () => {
+					console.log("onload image", this.name);
+					this.setup();
+					this.isLoaded = true;
+					resolve(this);
+				};
+			});
 		}
 		setup() {
 			this.data = this.getImageData();
 			this.flippedHorizontal = this.getFlippedImage(-1, 1);
 			this.flippedVertical = this.getFlippedImage(1, -1);
 			this.setOutline();
-			if (PIXI) {
+			if (RocketBoots.PIXI) {
 				this.setPixiProperties();
 			}
 		}
@@ -76,12 +82,17 @@
 			c.putImageData(data, 0, 0);
 			this.outline = canvas.toDataURL();
 		}
+		setPixiProperties() {
+			this.pixiTexture = new RocketBoots.PIXI.Texture.fromImage(this.src);
+			this.pixiSprite = new RocketBoots.PIXI.Sprite(this.pixiTexture);
+			//console.log(this.pixiTexture, this.pixiSprite)
+		}
 	}
 
 	const component = {
 		fileName: "GameImage",
 		classes: {"GameImage": GameImage},
-		requirements: ["Pixi"],
+		requirements: ["PIXI"], // Recommended
 		description: "GameImage class",
 		credits: "By Luke Nickerson, 2017-2018"
 	};

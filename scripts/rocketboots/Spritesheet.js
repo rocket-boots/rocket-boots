@@ -11,8 +11,9 @@
 			this.sprites = {};
 			this.loadPromise = new Promise((resolve, reject) => {
 				this.sheet.onload = () => {
-					this.parse();
-					resolve(this);
+					this.parse().then(() => {
+						resolve(this);	
+					});
 				};
 			});
 		}
@@ -25,6 +26,7 @@
 			let y = 0;
 			let kx = 0;
 			let ky = 0;
+			let promises = [];
 			canvas.width = w;
 			canvas.height = h;
 			this.spriteList.length = 0; //while (this.spriteList.length) { this.spriteList.pop(); }
@@ -32,7 +34,7 @@
 				let row = this.spriteKeys[ky];
 				kx = 0;
 				x = 0;
-				console.log("Row ---", y, this.sheet.height, row, x, this.sheet.width);
+				//console.log("Row ---", y, this.sheet.height, row, x, this.sheet.width);
 				if (row !== undefined) {
 					while (x < this.sheet.width) {
 						let key = row[kx];
@@ -40,14 +42,15 @@
 							c.clearRect(0, 0, canvas.width, canvas.height);
 							c.drawImage(this.sheet, x, y, w, h, 0, 0, w, h);
 							const src = canvas.toDataURL();
-							const spriteImage = new RocketBoots.GameImage({src: src});
-							if (!(spriteImage instanceof RocketBoots.GameImage)) {
-								console.warn("!");
-							}
+							const spriteImage = new RocketBoots.GameImage({
+								name: key,
+								src: src
+							});
 							this.spriteList.push(spriteImage);
 							this.sprites[key] = spriteImage;
+							promises.push(spriteImage.loadPromise);
 						}
-						console.log(key, x, y, kx, ky);
+						//console.log(key, x, y, kx, ky);
 						x += w;
 						kx++;
 					}
@@ -55,6 +58,7 @@
 				y += h;
 				ky++;
 			}
+			return Promise.all(promises);
 		}
 	}
 
