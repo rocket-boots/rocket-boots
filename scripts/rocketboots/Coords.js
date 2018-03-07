@@ -9,7 +9,6 @@
 		this.y = (typeof y == 'number') ? y : 0;
 		return this;
 	}
-	component.Coords = Coords;
 
 	Coords.prototype = {
 		get r () {
