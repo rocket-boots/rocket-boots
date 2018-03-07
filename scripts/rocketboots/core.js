@@ -156,10 +156,9 @@ var RocketBoots = {
 		return this;
 	},
 	getComponentByName: function (componentName) {
-		var o = this;
-		for (var cKey in o.components) {
-			if (o.components[cKey].name == componentName) {
-				return o.components[cKey];
+		for (let cKey in this.components) {
+			if (this.components[cKey].name == componentName) {
+				return this.components[cKey];
 			}
 		};
 		return;
@@ -178,7 +177,7 @@ var RocketBoots = {
 		var comp = this.getComponentByName(componentName);
 		return (comp && comp.isInstalled);
 	},
-	loadComponents : function(arr, path){
+	loadComponents: function(arr, path){
 		var o = this;
 		var componentName;
 		path = (typeof path === 'undefined') ? "rocketboots/" : path;
@@ -196,18 +195,19 @@ var RocketBoots = {
 		}
 		return this;
 	},
-	loadCustomComponents : function (arr, path) {
+	loadCustomComponents: function (arr, path) {
 		path = (typeof path === 'undefined') ? "" : path;
 		return this.loadComponents(arr, path);
 	},
-	areAllComponentsLoaded : function(){
-		var o = this;
-		var componentCount = 0,
-			componentsInstalledCount = 0;
-		for (var c in o.components) {
+	areAllComponentsLoaded: function(){
+		let componentCount = 0;
+		let componentsInstalledCount = 0;
+		for (let c in this.components) {
 			// if (o.components.hasOwnProperty(c)) {  do stuff	}
 			componentCount++;
-			if (o.components[c].isInstalled) componentsInstalledCount++;
+			if (this.components[c].isInstalled) {
+				componentsInstalledCount++;
+			}
 		}
 		console.log("RB Components Installed: " + componentsInstalledCount + "/" + componentCount);
 		return (componentsInstalledCount >= componentCount);
@@ -239,7 +239,7 @@ var RocketBoots = {
 		return this;	
 	},
 	init: function(attempt){
-		var o = this;
+		const o = this;
 		// TODO: allow dependecies to be injected rather than forcing them to be on the window scope
 		var isJQueryUndefined = (typeof $ === "undefined");
 		var isLodashUndefined = (typeof _ === "undefined");
