@@ -1,7 +1,7 @@
 (function(){
 	class Spritesheet {
 		constructor(n, cb) {
-			this.sheet = new GameImage(n);
+			this.sheet = new RocketBoots.GameImage(n);
 			this.sprites = [];
 			this.sheet.onload = () => { 
 				this.parse();
