@@ -8,8 +8,8 @@
 			this.spriteSize = options.spriteSize || {x: 16, y: 16};
 			this.spriteKeys = options.spriteKeys || [[]];
 			this.spriteList = [];
-			this.sprites = {};
-			this.loadPromise = new Promise((resolve, reject) => {
+			this.spriteImages = {};
+			this.loaded = new Promise((resolve, reject) => {
 				this.sheet.onload = () => {
 					this.parse().then(() => {
 						resolve(this);	
@@ -47,8 +47,8 @@
 								src: src
 							});
 							this.spriteList.push(spriteImage);
-							this.sprites[key] = spriteImage;
-							promises.push(spriteImage.loadPromise);
+							this.spriteImages[key] = spriteImage;
+							promises.push(spriteImage.loaded);
 						}
 						//console.log(key, x, y, kx, ky);
 						x += w;
@@ -59,6 +59,12 @@
 				ky++;
 			}
 			return Promise.all(promises);
+		}
+		getImage(key) {
+			return this.spriteImages[key];
+		}
+		getImageCopy(key) {
+			return new RocketBoots.GameImage(this.getImage(key));
 		}
 	}
 

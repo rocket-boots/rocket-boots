@@ -52,6 +52,7 @@
 		return new Coords(coord.x, coord.y);
 	};
 	Coords.prototype.clone = Coords.prototype.getCopy;
+	Coords.prototype.copy = Coords.prototype.getCopy;
 	Coords.prototype.set = function(coord){
 		this.checkCoords(coord);
 		this.x = coord.x;

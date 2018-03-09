@@ -26,9 +26,8 @@
 			this.outline = new Image();
 			this.isLoaded = false;
 			// Setup now and after loaded
-			this.loadPromise = new Promise((resolve, reject) => {
+			this.loaded = new Promise((resolve, reject) => {
 				this.onload = () => {
-					console.log("onload image", this.name);
 					this.setup();
 					this.isLoaded = true;
 					resolve(this);
@@ -40,7 +39,7 @@
 			this.flippedHorizontal = this.getFlippedImage(-1, 1);
 			this.flippedVertical = this.getFlippedImage(1, -1);
 			this.setOutline();
-			if (RocketBoots.PIXI) {
+			if (RocketBoots && RocketBoots.PIXI) {
 				this.setPixiProperties();
 			}
 		}
@@ -82,8 +81,15 @@
 			c.putImageData(data, 0, 0);
 			this.outline = canvas.toDataURL();
 		}
+		createPixiTexture() {
+			return new RocketBoots.PIXI.Texture.fromImage(this.src);
+		}
+		createPixiSprite() {
+			const texture = this.createPixiTexture();
+			return new RocketBoots.PIXI.Sprite(texture);
+		}
 		setPixiProperties() {
-			this.pixiTexture = new RocketBoots.PIXI.Texture.fromImage(this.src);
+			this.pixiTexture = this.createPixiTexture();
 			this.pixiSprite = new RocketBoots.PIXI.Sprite(this.pixiTexture);
 			//console.log(this.pixiTexture, this.pixiSprite)
 		}
