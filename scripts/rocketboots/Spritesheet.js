@@ -31,13 +31,13 @@
 			canvas.height = h;
 			this.spriteList.length = 0; //while (this.spriteList.length) { this.spriteList.pop(); }
 			while (y < this.sheet.height) {
-				let row = this.spriteKeys[ky];
+				let rowOfKeys = this.spriteKeys[ky];
 				kx = 0;
 				x = 0;
-				//console.log("Row ---", y, this.sheet.height, row, x, this.sheet.width);
-				if (row !== undefined) {
+				//console.log("--- Row ---\n", rowOfKeys);
+				if (rowOfKeys !== undefined && rowOfKeys.length > 0) {
 					while (x < this.sheet.width) {
-						let key = row[kx];
+						const key = rowOfKeys[kx];
 						if (key !== undefined) {
 							c.clearRect(0, 0, canvas.width, canvas.height);
 							c.drawImage(this.sheet, x, y, w, h, 0, 0, w, h);
@@ -48,9 +48,10 @@
 							});
 							this.spriteList.push(spriteImage);
 							this.spriteImages[key] = spriteImage;
+							//console.log(src);
 							promises.push(spriteImage.loaded);
 						}
-						//console.log(key, x, y, kx, ky);
+						//console.log(x, y, key, kx, ky);
 						x += w;
 						kx++;
 					}

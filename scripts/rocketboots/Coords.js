@@ -167,6 +167,7 @@
 	Coords.prototype.isEqualInteger = function(coord){
 		return (Math.round(this.x) == Math.round(coord.x) && Math.round(this.y) == Math.round(coord.y));
 	};
+	Coords.prototype.equals = Coords.prototype.isEqual;
 
 	// Polar Coordinate functions
 	Coords.prototype.setByPolarCoords = function(r, theta) {
