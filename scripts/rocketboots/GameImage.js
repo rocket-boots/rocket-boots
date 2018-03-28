@@ -43,10 +43,12 @@
 				this.setPixiProperties();
 			}
 		}
-		getImageData() {
-			let c = this.getCanvasContext();
-			c.drawImage(this, 0, 0);
-			return c.getImageData(0, 0, this.width, this.height);
+		getImageData(ctx) {
+			if (!ctx) {
+				ctx = this.getCanvasContext();
+			}
+			ctx.drawImage(this, 0, 0);
+			return ctx.getImageData(0, 0, this.width, this.height);
 		}
 		getFlippedImage(a, b) {
 			let c = this.getCanvasContext();
@@ -70,8 +72,14 @@
 			let c = canvas.getContext('2d');
 			c._canvas = canvas;
 			return c;
-		}	
-		setOutline() {
+		}
+		setSourceByCanvas(canvas) {
+			this.src = canvas.toDataURL();
+		}
+		setSourceByCanvasContext(ctx) {
+			this.setSourceByCanvas(ctx._canvas);
+		}
+		setOutline() { // TODO
 			return;
 			let data;
 			// TODO Get outline data.... 
@@ -93,6 +101,36 @@
 			this.pixiSprite = new RocketBoots.PIXI.Sprite(this.pixiTexture);
 			//console.log(this.pixiTexture, this.pixiSprite)
 		}
+		replaceColor(oldColor, newColor) {
+			// Based on http://jsfiddle.net/m1erickson/4apAS/
+			const ctx = this.getCanvasContext();
+			const oldRed = oldColor.red;
+			const oldGreen = oldColor.green;
+			const oldBlue = oldColor.blue;
+			const newRed = newColor.red;
+			const newGreen = newColor.green;
+			const newBlue = newColor.blue;
+			let count = 0;
+			let imageData = this.getImageData(ctx);
+			for (let i = 0; i < imageData.data.length; i += 4) {
+				// is this pixel the old rgb?
+				if (
+					imageData.data[i] == oldRed &&
+					imageData.data[i + 1] == oldGreen &&
+					imageData.data[i + 2] == oldBlue
+				) {
+					imageData.data[i] = newRed;
+					imageData.data[i + 1] = newGreen;
+					imageData.data[i + 2] = newBlue;
+					count++;
+				}
+			}
+			// TODO: can set by data directly?
+			ctx.putImageData(imageData, 0, 0);
+			this.setSourceByCanvasContext(ctx);
+			return count;
+		}
+
 	}
 
 	const component = {

@@ -85,6 +85,10 @@
 		this.y = 0;
 		return this;
 	};
+	Coords.prototype.abs = function() {
+		this.x = Math.abs(this.x);
+		this.y = Math.abs(this.y);
+	};
 
 	Coords.prototype.getMultiply = function(n){
 		var x = this.x * n;
