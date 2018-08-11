@@ -4,18 +4,23 @@
 		classes:		{"Loop": Loop},
 		requirements:	[],
 		description:	"Loop (originally 'Looper')",
-		credits:		"By Luke Nickerson, 2014-2016"
+		credits:		"By Luke Nickerson, 2014-2018"
 	};
 
 	function Loop(fn, delay) {
+		this.fn = function(){};
+		this.delay = 0;
 		this.set(fn, delay);
+
 		this.isLooping 	= false;
 		this.timer 		= 0;
 		this.iteration 	= 0;
-		//this.lastTime 	= 0;
+		this.lastTime 	= 0;
 		// Update certain things once every X iterations
 		this.modulusActions 	= [];
 		this.numOfModulusActions = 0;
+		// Set this
+
 	}
 	
 	Loop.prototype._reloop = function(o){
@@ -27,33 +32,19 @@
 			}, o.delay);
 		}			
 	}
-	/*
-	Loop.prototype._safeReloop = function(o){
-		if (o.isLooping) {
-			o.iteration++;
-			// --- Safety to prevent infinite loops ---
-			if (o.iteration < 15000000) { // Use Number.MAX_SAFE_INTEGER ?
-				o.timer = window.setTimeout(function(){
-					o.loop(); 
-				}, o.delay); 
-			} else {
-				o.iteration = 0;
-				o.togglePause(true);
-			}
-		}			
-	}
-	*/
 	
 	Loop.prototype.loop = function(){
-		var o = this;
-		var mai = o.numOfModulusActions;
+		let mai = this.numOfModulusActions;
 		while (mai--) {
-			if ((o.iteration % o.modulusActions[mai].loopModulus) == 0) {
-				o.modulusActions[mai].loopFunction();
+			if ((this.iteration % this.modulusActions[mai].loopModulus) == 0) {
+				this.modulusActions[mai].loopFunction();
 			}
 		}
-		o.fn(o.iteration);
-		o._reloop(o);	
+		const now = new Date();
+		const delta = (this.lastTime) ? now - this.lastTime : 0;
+		this.lastTime = now;
+		this.fn(this.iteration, delta);
+		this._reloop(this);	
 	};
 
 	Loop.prototype.start = function(){
@@ -68,6 +59,7 @@
 	}
 	Loop.prototype.pause = function(){
 		this.isLooping = false;
+		this.lastTime = 0;
 		window.clearTimeout(this.timer);
 		return this;
 	}	
