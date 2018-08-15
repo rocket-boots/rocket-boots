@@ -1,19 +1,12 @@
 (function(){
-	const component = {
-		fileName: 		"Physics",
-		classes:		{"Physics": Physics},
-		requirements:	[], // Dependent on Entity-like objects, but not a strict requirement
-		description:	"Physics class",
-		credits:		"By Luke Nickerson, 2014, 2017, originally from stardust.js"
-	};
-
-	var Physics = component.Physics = function(){
+	function Physics() {
 		this.isCollisionDetectionOn = true;
 		this.isObjectGravityOn = false;
 		//this.isLinearGravityOn = true;
 		this.elasticity = 0.7;
 		this.gravitationalConstant = 0.5; // "big G"
 	}
+
 	Physics.prototype.apply = function(world){
 		var p = this;
 		// Loop over all movable entities
@@ -95,7 +88,6 @@
 		//console.log("physics", i, b, o1.bigG, o1.mass, o2.mass);
 	}
 	
-
 	Physics.prototype.setNewCollisionVels = function(o1, o2, elasticity){
 		// http://www.gamasutra.com/view/feature/131424/pool_hall_lessons_fast_accurate_.php?page=3
 		if (o1.mass <= 0 || o2.mass <= 0) {
@@ -128,6 +120,14 @@
 		return true;
 	}
 
+
+	const component = {
+		fileName: 		"Physics",
+		classes:		{"Physics": Physics},
+		requirements:	[], // Dependent on Entity-like objects, but not a strict requirement
+		description:	"Physics class",
+		credits:		"By Luke Nickerson, 2014, 2017, 2018 - originally from stardust.js"
+	};
 
 	// Install into RocketBoots if it exists otherwise put the classes on the global window object
 	if (RocketBoots) {
