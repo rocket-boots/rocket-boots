@@ -1,13 +1,15 @@
 {
   "name": "rocket-boots",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "Open source kit for web game development",
-  "main": "index.js",
+  "main": "src/index.js",
+  "type": "module",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ./src/*.js"
   },
   "keywords": [
     "games",
@@ -18,5 +20,11 @@
     "toolkit"
   ],
   "author": "Luke Nickerson",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "rocket-boots-eslint": "github:rocket-boots/rocket-boots-eslint"
+  },
+  "dependencies": {
+    "keyboard-commander": "github:rocket-boots/keyboard-commander#v0.2.0"
+  }
 }
