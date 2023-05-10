@@ -1,6 +1,6 @@
-<img align="right" src="images/boots1_flat_300.png">
-
 # RocketBoots Web Game Kit
+
+<img align="right" src="images/boots1_flat_300.png">
 
 [RocketBoots]((https://github.com/rocket-boots/rocket-boots)) is an open source kit to help create web games in JavaScript and HTML5. I wrote it to have a common foundation when making games for Ludum Dare and other game jams.
 
