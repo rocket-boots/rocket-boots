@@ -1,10 +1,10 @@
-import angleUtils from './angleUtils.js';
+import * as angleUtils from './angleUtils.js';
 import ArrayCoords from './ArrayCoords.js';
 import clamp from './clamp.js';
 import Looper from './Looper.js';
 import MouseWheelWatcher from './MouseWheelWatcher.js';
 import Observer from './Observer.js';
-import physicsUtils from './physicsUtils.js';
+import * as physicsUtils from './physicsUtils.js';
 import PointerLocker from './PointerLocker.js';
 import Pool from './Pool.js';
 import PseudoRandomizer from './PseudoRandomizer.js';
