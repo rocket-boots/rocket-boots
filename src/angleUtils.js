@@ -7,10 +7,6 @@ const HALF_PI = PI / 2;
 const DEGREES_PER_RADIAN = (180 / PI);
 const CARDINAL_FACING_RADIANS = Object.freeze([0, PI * 0.5, PI, PI * 1.5]);
 
-export {
-
-};
-
 function averageTwoAngles(angle1Param, angle2Param) {
 	let angle1 = angle1Param;
 	let angle2 = angle2Param;
